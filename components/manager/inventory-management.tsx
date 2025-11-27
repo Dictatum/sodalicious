@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import type { useProducts, useInventoryLogs } from "@/lib/hooks"
+import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+import { useMenuSync as useMenuSyncHook } from "@/lib/hooks"
 
 interface InventoryManagementProps {
   products: ReturnType<typeof useProducts>
@@ -9,11 +10,12 @@ interface InventoryManagementProps {
 }
 
 export default function InventoryManagement({ products, inventoryLogs }: InventoryManagementProps) {
+  const menuSync = useMenuSyncHook()
   const [showAdjustForm, setShowAdjustForm] = useState(false)
-  const [adjustingProductId, setAdjustingProductId] = useState<number | null>(null)
+  const [adjustingProductId, setAdjustingProductId] = useState<string | null>(null)
   const [adjustmentData, setAdjustmentData] = useState({ quantity: 0, type: "restock", reason: "" })
 
-  const lowStockItems = products.getLowStockItems()
+  const lowStockItems = menuSync.getLowStockItems()
 
   const handleAdjustment = () => {
     if (adjustingProductId) {

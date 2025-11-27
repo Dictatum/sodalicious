@@ -12,6 +12,7 @@ import {
   mockUsers,
   api,
 } from "./store"
+import { COMPLETE_MENU, getAllProductVariants, MENU_CATEGORIES, getBaseMenuItems } from "./menu-data"
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>(mockProducts)
@@ -210,4 +211,58 @@ export function useActivityLogs() {
   )
 
   return { logs, addLog }
+}
+
+/**
+ * Menu Sync Hook
+ * Provides synchronized menu data across Cashier, Manager, and Inventory panels
+ * Pulls from the central menu-data.ts source
+ */
+export function useMenuSync() {
+  const [menuItems] = useState(getBaseMenuItems())
+  const [categories] = useState(MENU_CATEGORIES)
+  const [selectedCategory, setSelectedCategory] = useState<string>("All")
+
+  const getMenuByCategory = useCallback(
+    (category: string) => {
+      if (category === "All") return menuItems
+      return menuItems.filter((item) => item.category === category)
+    },
+    [menuItems],
+  )
+
+  const getMenuItemById = useCallback(
+    (id: string) => {
+      return menuItems.find((item) => item.id === id)
+    },
+    [menuItems],
+  )
+
+  const getAllCategories = useCallback(() => {
+    return ["All", ...categories.map((cat) => cat.name)]
+  }, [categories])
+
+  const getCategoryEmoji = useCallback(
+    (categoryName: string) => {
+      const category = categories.find((cat) => cat.name === categoryName)
+      return category?.emoji || "📌"
+    },
+    [categories],
+  )
+
+  const getLowStockItems = useCallback(() => {
+    return menuItems.filter((item) => item.stock <= item.minThreshold)
+  }, [menuItems])
+
+  return {
+    menuItems,
+    categories,
+    selectedCategory,
+    setSelectedCategory,
+    getMenuByCategory,
+    getMenuItemById,
+    getAllCategories,
+    getCategoryEmoji,
+    getLowStockItems,
+  }
 }

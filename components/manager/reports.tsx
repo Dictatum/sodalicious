@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import type { useOrders, useProducts } from "@/lib/hooks"
+import type { useOrders, useProducts, useMenuSync } from "@/lib/hooks"
+import { useMenuSync as useMenuSyncHook } from "@/lib/hooks"
 
 interface ReportsProps {
   orders: ReturnType<typeof useOrders>
@@ -9,6 +10,7 @@ interface ReportsProps {
 }
 
 export default function Reports({ orders, products }: ReportsProps) {
+  const menuSync = useMenuSyncHook()
   const [reportType, setReportType] = useState<"daily" | "weekly" | "monthly" | "payment" | "inventory">("daily")
   const [dateRange, setDateRange] = useState({ start: "2025-11-01", end: "2025-11-11" })
 

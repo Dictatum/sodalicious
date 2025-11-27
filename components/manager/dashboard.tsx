@@ -1,6 +1,7 @@
 "use client"
 
-import type { useProducts, useOrders } from "@/lib/hooks"
+import type { useProducts, useOrders, useMenuSync } from "@/lib/hooks"
+import { useMenuSync as useMenuSyncHook } from "@/lib/hooks"
 
 interface ManagerDashboardProps {
   products: ReturnType<typeof useProducts>
@@ -9,11 +10,13 @@ interface ManagerDashboardProps {
 }
 
 export default function ManagerDashboard({ products, orders, inventoryLogs }: ManagerDashboardProps) {
+  const menuSync = useMenuSyncHook()
+  
   const todaysSales = orders.getTodaysSales()
   const totalOrders = orders.orders.filter((o) => o.timestamp.startsWith("2025-11-11")).length
-  const lowStockItems = products.getLowStockItems()
+  const lowStockItems = menuSync.getLowStockItems()
 
-  const topSelling = products.products
+  const topSelling = menuSync.menuItems
     .slice()
     .sort((a, b) => b.stock - a.stock)
     .slice(0, 3)
@@ -27,7 +30,7 @@ export default function ManagerDashboard({ products, orders, inventoryLogs }: Ma
         <StatCard label="Total Sales" value={`₱${todaysSales.toFixed(2)}`} color="bg-blue-100" />
         <StatCard label="Total Orders" value={totalOrders.toString()} color="bg-green-100" />
         <StatCard label="Low Stock Items" value={lowStockItems.length.toString()} color="bg-yellow-100" />
-        <StatCard label="Total Products" value={products.products.length.toString()} color="bg-purple-100" />
+        <StatCard label="Total Products" value={menuSync.menuItems.length.toString()} color="bg-purple-100" />
       </div>
 
       {/* Main Cards */}
@@ -45,7 +48,7 @@ export default function ManagerDashboard({ products, orders, inventoryLogs }: Ma
                   <p className="font-semibold">{item.name}</p>
                   <p className="text-sm text-muted-foreground">Stock: {item.stock}</p>
                 </div>
-                <p className="font-bold text-lg">₱{item.price}</p>
+                <p className="font-bold text-lg text-primary">{item.sizes.length} sizes</p>
               </div>
             ))}
           </div>

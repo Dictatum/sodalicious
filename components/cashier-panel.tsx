@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useProducts } from "@/lib/hooks"
+import { useMenuSync } from "@/lib/hooks"
 import { api, type CartItem } from "@/lib/store"
 
 interface CashierPanelProps {
@@ -10,7 +10,7 @@ interface CashierPanelProps {
 }
 
 export default function CashierPanel({ onLogout, currentUser }: CashierPanelProps) {
-  const { products, loading: productsLoading } = useProducts()
+  const menuSync = useMenuSync()
   const [cart, setCart] = useState<CartItem[]>([])
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [searchTerm, setSearchTerm] = useState("")
@@ -19,37 +19,61 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
   const [showReceipt, setShowReceipt] = useState(false)
   const [lastOrder, setLastOrder] = useState<any>(null)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  
+  // Size selection modal state
+  const [showSizeModal, setShowSizeModal] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<any>(null)
 
-  const categories = ["All", ...new Set(products.map((p) => p.category))]
+  const categories = menuSync.getAllCategories()
+  const filteredItems = menuSync.getMenuByCategory(selectedCategory).filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) && item.stock > 0
+  )
 
-  const filteredItems = products.filter((item) => {
-    const matchCategory = selectedCategory === "All" || item.category === selectedCategory
-    const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchCategory && matchSearch && item.stock_quantity > 0
-  })
+  const handleItemClick = (item: any) => {
+    setSelectedItem(item)
+    setShowSizeModal(true)
+  }
 
-  const addToCart = (item: any) => {
-    const existing = cart.find((c) => c.product.id === item.id)
-    if (existing) {
-      setCart(cart.map((c) => (c.product.id === item.id ? { ...c, quantity: c.quantity + 1 } : c)))
-    } else {
-      setCart([...cart, { product: item, quantity: 1 }])
+  const handleSizeSelect = (size: any) => {
+    if (selectedItem) {
+      const cartItemId = `${selectedItem.id}-${size.size}`
+      const existing = cart.find((c) => c.id === cartItemId)
+      
+      if (existing) {
+        setCart(cart.map((c) =>
+          c.id === cartItemId ? { ...c, quantity: c.quantity + 1 } : c
+        ))
+      } else {
+        setCart([
+          ...cart,
+          {
+            id: cartItemId,
+            productId: selectedItem.id,
+            name: selectedItem.name,
+            size: size.size,
+            price: size.price,
+            quantity: 1,
+          },
+        ])
+      }
     }
+    setShowSizeModal(false)
+    setSelectedItem(null)
   }
 
-  const removeFromCart = (itemId: number) => {
-    setCart(cart.filter((c) => c.product.id !== itemId))
+  const removeFromCart = (cartItemId: string) => {
+    setCart(cart.filter((c) => c.id !== cartItemId))
   }
 
-  const updateQuantity = (itemId: number, quantity: number) => {
+  const updateQuantity = (cartItemId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(itemId)
+      removeFromCart(cartItemId)
     } else {
-      setCart(cart.map((c) => (c.product.id === itemId ? { ...c, quantity } : c)))
+      setCart(cart.map((c) => (c.id === cartItemId ? { ...c, quantity } : c)))
     }
   }
 
-  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const tax = subtotal * 0.08
   const total = subtotal + tax
 
@@ -59,29 +83,20 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
     setCheckoutLoading(true)
     try {
       const orderData = {
-        cashier_id: currentUser.id,
+        cashier_id: currentUser?.id || 1,
         customer_name: customerName || "Walk-in Customer",
         total_amount: total,
         payment_method: paymentMethod,
         items: cart.map((item) => ({
-          product_id: item.product.id,
+          product_id: item.productId,
+          name: `${item.name} (${item.size})`,
           quantity: item.quantity,
-          price: item.product.price,
-          subtotal: item.product.price * item.quantity,
+          price: item.price,
+          subtotal: item.price * item.quantity,
         })),
       }
 
       const order = await api.createOrder(orderData)
-
-      // Log activity
-      await api.logActivity({
-        user_id: currentUser.id,
-        action: `Completed order ${order.order_number}`,
-        action_type: "create",
-        entity_type: "order",
-        entity_id: order.id,
-        details: { items: cart.length, total },
-      })
 
       setLastOrder({
         ...order,
@@ -94,7 +109,7 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
       setCustomerName("")
       setTimeout(() => setShowReceipt(false), 10000)
     } catch (err) {
-      console.error("[v0] Checkout error:", err)
+      console.error("[POS] Checkout error:", err)
       alert("Failed to complete order. Please try again.")
     } finally {
       setCheckoutLoading(false)
@@ -108,40 +123,38 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
           <h2 className="text-3xl font-bold mb-4 text-foreground">Order Successful!</h2>
           <div className="bg-green-100 text-green-700 p-4 rounded-xl mb-6 border border-green-200">
             <p className="font-bold text-lg">✓ Payment Received</p>
-            <p className="text-sm mt-2 font-medium">{lastOrder.payment_method.toUpperCase()}</p>
+            <p className="text-sm mt-2 font-medium">{paymentMethod.toUpperCase()}</p>
           </div>
 
           <div className="text-left bg-muted p-6 rounded-xl mb-6">
             <p className="font-bold text-center mb-4 text-foreground">RECEIPT</p>
             <p className="text-sm mb-4 border-b border-border pb-4 text-foreground">
-              Order: <span className="font-bold">{lastOrder.order_number}</span>
+              Customer: <span className="font-bold">{lastOrder.customer_name || customerName}</span>
               <br />
-              Time: <span className="font-bold">{new Date(lastOrder.created_at).toLocaleTimeString()}</span>
-              <br />
-              Customer: <span className="font-bold">{lastOrder.customer_name}</span>
+              Time: <span className="font-bold">{new Date().toLocaleTimeString()}</span>
             </p>
             <div className="space-y-1 text-sm border-b border-border pb-4 mb-4 text-foreground">
-              {lastOrder.items?.map((item: any) => (
-                <div key={item.product.id} className="flex justify-between">
+              {lastOrder.items?.map((item: CartItem) => (
+                <div key={item.id} className="flex justify-between">
                   <span>
-                    {item.quantity}x {item.product.name}
+                    {item.quantity}x {item.name} ({item.size})
                   </span>
-                  <span className="font-semibold">₱{(item.product.price * item.quantity).toFixed(2)}</span>
+                  <span className="font-semibold">₱{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
             <div className="space-y-1 text-sm font-bold text-foreground">
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span>₱{lastOrder.subtotal.toFixed(2)}</span>
+                <span>₱{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax:</span>
-                <span>₱{lastOrder.tax.toFixed(2)}</span>
+                <span>₱{tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-lg border-t border-border pt-2">
                 <span>Total:</span>
-                <span className="text-primary">₱{lastOrder.total_amount.toFixed(2)}</span>
+                <span className="text-primary">₱{total.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -193,47 +206,42 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
                       : "bg-muted text-foreground hover:bg-muted/80 border border-border"
                   }`}
                 >
+                  <span className="mr-2">{menuSync.getCategoryEmoji(cat)}</span>
                   {cat}
                 </button>
               ))}
             </div>
           </div>
 
-          {productsLoading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-muted-foreground">Loading products...</p>
-            </div>
-          ) : (
-            <div className="flex-1 overflow-y-auto grid grid-cols-3 gap-3">
-              {filteredItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => addToCart(item)}
-                  disabled={item.stock_quantity === 0}
-                  className="bg-card border border-border rounded-xl p-4 hover:shadow-lg hover:border-primary/50 transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+          <div className="flex-1 overflow-y-auto grid grid-cols-4 gap-3">
+            {filteredItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleItemClick(item)}
+                disabled={item.stock <= 0}
+                className="bg-card border border-border rounded-xl p-4 hover:shadow-lg hover:border-primary/50 transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="w-full h-20 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg mb-3 flex items-center justify-center border border-primary/20">
+                  <span className="text-3xl">{menuSync.getCategoryEmoji(item.category)}</span>
+                </div>
+                <p className="font-bold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                  {item.name}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {item.sizes.length} size{item.sizes.length !== 1 ? "s" : ""}
+                </p>
+                <p
+                  className={`text-xs font-semibold px-2 py-1 rounded-lg mt-2 ${
+                    item.stock <= item.minThreshold
+                      ? "bg-red-100 text-red-700"
+                      : "bg-muted text-muted-foreground"
+                  }`}
                 >
-                  <div className="w-full h-24 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg mb-3 flex items-center justify-center border border-primary/20">
-                    <span className="text-2xl">🍹</span>
-                  </div>
-                  <p className="font-bold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                    {item.name}
-                  </p>
-                  <div className="flex justify-between items-center mt-3">
-                    <p className="text-lg font-bold text-primary">₱{item.price}</p>
-                    <p
-                      className={`text-xs font-semibold px-2 py-1 rounded-lg ${
-                        item.stock_quantity <= item.reorder_level
-                          ? "bg-red-100 text-red-700"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {item.stock_quantity} left
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+                  {item.stock} left
+                </p>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="w-80 bg-card border border-border rounded-2xl flex flex-col shadow-lg">
@@ -256,14 +264,14 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
               <p className="text-center text-muted-foreground py-8 font-medium">Cart is empty</p>
             ) : (
               cart.map((item) => (
-                <div
-                  key={item.product.id}
-                  className="bg-muted border border-border p-3 rounded-lg hover:bg-muted/80 transition-colors"
-                >
+                <div key={item.id} className="bg-muted border border-border p-3 rounded-lg hover:bg-muted/80 transition-colors">
                   <div className="flex justify-between items-start mb-2">
-                    <p className="font-semibold text-sm text-foreground">{item.product.name}</p>
+                    <div>
+                      <p className="font-semibold text-sm text-foreground">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">{item.size}</p>
+                    </div>
                     <button
-                      onClick={() => removeFromCart(item.product.id)}
+                      onClick={() => removeFromCart(item.id)}
                       className="text-destructive hover:text-destructive/80 text-sm font-bold"
                     >
                       ✕
@@ -272,74 +280,96 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
                   <div className="flex justify-between items-center">
                     <div className="flex gap-1 bg-background rounded-lg p-1">
                       <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         className="px-2 py-1 bg-card rounded text-sm font-bold text-foreground hover:bg-muted transition-colors"
                       >
                         −
                       </button>
                       <span className="px-3 py-1 text-sm font-bold text-foreground">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="px-2 py-1 bg-card rounded text-sm font-bold text-foreground hover:bg-muted transition-colors"
                       >
                         +
                       </button>
                     </div>
-                    <p className="font-bold text-sm text-primary">₱{(item.product.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-bold text-sm text-primary">₱{(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          <div className="p-4 border-t border-border space-y-3 bg-muted/30">
-            <div className="space-y-2 text-sm">
+          <div className="p-4 border-t border-border space-y-3">
+            <div className="space-y-1 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal:</span>
-                <span className="font-semibold">₱{subtotal.toFixed(2)}</span>
+                <span>₱{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Tax (8%):</span>
-                <span className="font-semibold">₱{tax.toFixed(2)}</span>
+                <span>₱{tax.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between font-bold text-lg border-t border-border pt-2 text-foreground">
+              <div className="flex justify-between text-lg font-bold text-foreground border-t border-border pt-2">
                 <span>Total:</span>
                 <span className="text-primary">₱{total.toFixed(2)}</span>
               </div>
             </div>
-          </div>
 
-          <div className="p-4 border-t border-border space-y-3">
-            <label className="text-sm font-bold text-foreground">Payment Method:</label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value as any)}
-              className="w-full px-3 py-2 border border-border rounded-lg bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary text-foreground transition-all"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="cash">Cash</option>
               <option value="gcash">GCash</option>
               <option value="card">Card</option>
-              <option value="e-wallet">E-wallet</option>
+              <option value="e-wallet">E-Wallet</option>
             </select>
-          </div>
 
-          <div className="p-4 space-y-2">
             <button
               onClick={handleCheckout}
               disabled={cart.length === 0 || checkoutLoading}
-              className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
+              className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {checkoutLoading ? "Processing..." : "Complete Payment"}
-            </button>
-            <button
-              onClick={() => setCart([])}
-              className="w-full py-2 border border-border rounded-lg font-medium hover:bg-muted transition-all text-foreground"
-            >
-              Clear Cart
+              {checkoutLoading ? "Processing..." : `Checkout (₱${total.toFixed(2)})`}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Size Selection Modal */}
+      {showSizeModal && selectedItem && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-card border border-border rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <h3 className="text-2xl font-bold mb-2 text-foreground">{selectedItem.name}</h3>
+            <p className="text-sm text-muted-foreground mb-6">{selectedItem.description}</p>
+
+            <div className="space-y-2 mb-6">
+              {selectedItem.sizes.map((size: any) => (
+                <button
+                  key={size.size}
+                  onClick={() => handleSizeSelect(size)}
+                  className="w-full py-3 px-4 bg-muted hover:bg-muted/80 border border-border rounded-lg font-semibold text-foreground transition-all flex justify-between items-center"
+                >
+                  <span>{size.size}</span>
+                  <span className="text-primary font-bold">₱{size.price}</span>
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => {
+                setShowSizeModal(false)
+                setSelectedItem(null)
+              }}
+              className="w-full py-2 px-4 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

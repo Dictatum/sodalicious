@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useProducts, useInventoryLogs } from "@/lib/hooks"
+import { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
 
 interface InventoryPanelProps {
   onLogout: () => void
@@ -10,6 +10,7 @@ interface InventoryPanelProps {
 export default function InventoryPanel({ onLogout }: InventoryPanelProps) {
   const products = useProducts()
   const inventoryLogs = useInventoryLogs()
+  const menuSync = useMenuSync()
   const [activeTab, setActiveTab] = useState<"inventory" | "logs">("inventory")
 
   return (
@@ -48,7 +49,7 @@ export default function InventoryPanel({ onLogout }: InventoryPanelProps) {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        {activeTab === "inventory" && <InventoryView products={products} inventoryLogs={inventoryLogs} />}
+        {activeTab === "inventory" && <InventoryView menuSync={menuSync} inventoryLogs={inventoryLogs} />}
         {activeTab === "logs" && <StockHistoryView inventoryLogs={inventoryLogs} />}
       </div>
     </div>
@@ -56,25 +57,22 @@ export default function InventoryPanel({ onLogout }: InventoryPanelProps) {
 }
 
 function InventoryView({
-  products,
+  menuSync,
   inventoryLogs,
-}: { products: ReturnType<typeof useProducts>; inventoryLogs: ReturnType<typeof useInventoryLogs> }) {
-  const [adjustingId, setAdjustingId] = useState<number | null>(null)
+}: { menuSync: ReturnType<typeof useMenuSync>; inventoryLogs: ReturnType<typeof useInventoryLogs> }) {
+  const [adjustingId, setAdjustingId] = useState<string | null>(null)
   const [adjustmentData, setAdjustmentData] = useState({ quantity: 0, type: "restock", reason: "" })
 
-  const lowStockItems = products.getLowStockItems()
+  const lowStockItems = menuSync.getLowStockItems()
 
   const handleAdjustment = () => {
     if (adjustingId) {
-      const product = products.products.find((p) => p.id === adjustingId)
-      if (product) {
-        const newStock =
-          product.stock + (adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity)
-        products.updateProduct(adjustingId, { stock: Math.max(0, newStock) })
-
+      const item = menuSync.getMenuItemById(adjustingId)
+      if (item) {
+        // In a real app, this would update via API
         inventoryLogs.addLog({
-          productId: adjustingId,
-          productName: product.name,
+          productId: parseInt(adjustingId),
+          productName: item.name,
           type: adjustmentData.type as any,
           quantity: adjustmentData.quantity,
           reason: adjustmentData.reason,

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import type { useProducts } from "@/lib/hooks"
+import { useMenuSync as useMenuSyncHook } from "@/lib/hooks"
 import type { Product } from "@/lib/store"
 
 interface ProductManagementProps {
@@ -9,31 +10,41 @@ interface ProductManagementProps {
 }
 
 export default function ProductManagement({ products }: ProductManagementProps) {
+  const menuSync = useMenuSyncHook()
   const [showForm, setShowForm] = useState(false)
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [formData, setFormData] = useState<Omit<Product, "id">>({
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [formData, setFormData] = useState<any>({
     name: "",
     price: 0,
-    category: "Soda",
+    category: "Hot Coffee",
     stock: 0,
     minThreshold: 5,
     description: "",
+    size: "M",
   })
 
   const handleSubmit = () => {
     if (editingId) {
-      products.updateProduct(editingId, formData)
+      products.updateProduct(parseInt(editingId), formData)
       setEditingId(null)
     } else {
       products.addProduct(formData)
     }
     setShowForm(false)
-    setFormData({ name: "", price: 0, category: "Soda", stock: 0, minThreshold: 5, description: "" })
+    setFormData({
+      name: "",
+      price: 0,
+      category: "Hot Coffee",
+      stock: 0,
+      minThreshold: 5,
+      description: "",
+      size: "M",
+    })
   }
 
-  const handleEdit = (product: Product) => {
+  const handleEdit = (product: any) => {
     setFormData(product)
-    setEditingId(product.id)
+    setEditingId(String(product.id))
     setShowForm(true)
   }
 
@@ -45,7 +56,15 @@ export default function ProductManagement({ products }: ProductManagementProps) 
           onClick={() => {
             setShowForm(!showForm)
             setEditingId(null)
-            setFormData({ name: "", price: 0, category: "Soda", stock: 0, minThreshold: 5, description: "" })
+            setFormData({
+              name: "",
+              price: 0,
+              category: "Hot Coffee",
+              stock: 0,
+              minThreshold: 5,
+              description: "",
+              size: "M",
+            })
           }}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
         >
@@ -76,12 +95,19 @@ export default function ProductManagement({ products }: ProductManagementProps) 
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="px-4 py-2 border border-border rounded bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <option>Soda</option>
-              <option>Coffee</option>
-              <option>Yakult</option>
-              <option>Frappes</option>
-              <option>Snacks</option>
+              {menuSync.getAllCategories().map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
             </select>
+            <input
+              type="text"
+              placeholder="Size (S/M/L/R)"
+              value={formData.size}
+              onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+              className="px-4 py-2 border border-border rounded bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            />
             <input
               type="number"
               placeholder="Stock"
@@ -117,34 +143,36 @@ export default function ProductManagement({ products }: ProductManagementProps) 
           <thead className="bg-accent">
             <tr>
               <th className="px-6 py-4 text-left font-bold">Name</th>
+              <th className="px-6 py-4 text-left font-bold">Category</th>
+              <th className="px-6 py-4 text-left font-bold">Size</th>
               <th className="px-6 py-4 text-left font-bold">Price</th>
               <th className="px-6 py-4 text-left font-bold">Stock</th>
-              <th className="px-6 py-4 text-left font-bold">Category</th>
               <th className="px-6 py-4 text-left font-bold">Min Threshold</th>
               <th className="px-6 py-4 text-left font-bold">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {products.products.map((product) => (
-              <tr key={product.id} className="hover:bg-accent/50">
-                <td className="px-6 py-4">{product.name}</td>
-                <td className="px-6 py-4">₱{product.price}</td>
+            {menuSync.menuItems.map((item) => (
+              <tr key={item.id} className="hover:bg-accent/50">
+                <td className="px-6 py-4">{item.name}</td>
+                <td className="px-6 py-4">{item.category}</td>
+                <td className="px-6 py-4">{item.size || "—"}</td>
+                <td className="px-6 py-4">₱{item.price}</td>
                 <td className="px-6 py-4">
-                  <span className={product.stock <= product.minThreshold ? "text-yellow-600 font-bold" : ""}>
-                    {product.stock}
+                  <span className={item.stock <= item.minThreshold ? "text-yellow-600 font-bold" : ""}>
+                    {item.stock}
                   </span>
                 </td>
-                <td className="px-6 py-4">{product.category}</td>
-                <td className="px-6 py-4">{product.minThreshold}</td>
+                <td className="px-6 py-4">{item.minThreshold}</td>
                 <td className="px-6 py-4 space-x-2">
                   <button
-                    onClick={() => handleEdit(product)}
+                    onClick={() => handleEdit(item)}
                     className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => products.deleteProduct(product.id)}
+                    onClick={() => products.deleteProduct(parseInt(item.id))}
                     className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
                   >
                     Delete

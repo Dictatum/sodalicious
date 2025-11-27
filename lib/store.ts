@@ -1,5 +1,5 @@
 export interface Product {
-  id: number
+  id: string | number
   name: string
   price: number
   category: string
@@ -7,6 +7,18 @@ export interface Product {
   minThreshold: number
   description?: string
   image?: string
+  size?: string
+  baseId?: string
+  categoryCode?: string
+}
+
+export interface CartItem {
+  id: string
+  productId?: string
+  name: string
+  size: string
+  price: number
+  quantity: number
 }
 
 export interface OrderItem {
@@ -61,104 +73,22 @@ export interface ActivityLog {
   timestamp: string
 }
 
-export type CartItem = {
-  product: Product
-  quantity: number
-}
+// Initial mock data - imported from complete menu
+import { getAllProductVariants } from "./menu-data"
 
-// Initial mock data
-export const mockProducts: Product[] = [
-  {
-    id: 1,
-    name: "Iced Calamansi Soda",
-    price: 65,
-    category: "Soda",
-    stock: 45,
-    minThreshold: 10,
-    description: "Refreshing iced calamansi flavored soda",
-  },
-  {
-    id: 2,
-    name: "Mango Yakult",
-    price: 75,
-    category: "Yakult",
-    stock: 32,
-    minThreshold: 15,
-    description: "Probiotic mango Yakult drink",
-  },
-  {
-    id: 3,
-    name: "Iced Coffee Latte",
-    price: 85,
-    category: "Coffee",
-    stock: 28,
-    minThreshold: 10,
-    description: "Smooth and creamy iced coffee latte",
-  },
-  {
-    id: 4,
-    name: "Strawberry Frappe",
-    price: 95,
-    category: "Frappes",
-    stock: 20,
-    minThreshold: 8,
-    description: "Blended strawberry frappe with whipped cream",
-  },
-  {
-    id: 5,
-    name: "Hot Espresso",
-    price: 55,
-    category: "Coffee",
-    stock: 40,
-    minThreshold: 10,
-    description: "Classic hot espresso shot",
-  },
-  {
-    id: 6,
-    name: "Chocolate Yakult",
-    price: 75,
-    category: "Yakult",
-    stock: 25,
-    minThreshold: 12,
-    description: "Rich chocolate Yakult",
-  },
-  {
-    id: 7,
-    name: "Cheese Fries",
-    price: 45,
-    category: "Snacks",
-    stock: 50,
-    minThreshold: 20,
-    description: "Crispy cheese-flavored fries",
-  },
-  {
-    id: 8,
-    name: "Blueberry Soda",
-    price: 70,
-    category: "Soda",
-    stock: 35,
-    minThreshold: 12,
-    description: "Tangy blueberry soda",
-  },
-  {
-    id: 9,
-    name: "Vanilla Frappuccino",
-    price: 90,
-    category: "Frappes",
-    stock: 18,
-    minThreshold: 8,
-    description: "Vanilla flavored cold frappe",
-  },
-  {
-    id: 10,
-    name: "Hot Chocolate",
-    price: 60,
-    category: "Coffee",
-    stock: 22,
-    minThreshold: 10,
-    description: "Warm and cozy hot chocolate",
-  },
-]
+export const mockProducts: Product[] = getAllProductVariants().map((item) => ({
+  id: item.id,
+  baseId: item.baseId,
+  name: item.name,
+  price: item.price,
+  size: item.size,
+  category: item.category,
+  categoryCode: item.categoryCode,
+  stock: item.stock,
+  minThreshold: item.minThreshold,
+  description: item.description,
+  image: item.image,
+}))
 
 export const mockUsers: User[] = [
   {
