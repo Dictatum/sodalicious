@@ -49,13 +49,28 @@ export async function POST(request: NextRequest) {
     // Update stock in DB
     await sql`UPDATE products SET stock_quantity = ${newQuantity} WHERE id = ${productResult[0].id}`
 
-    // Log the change
-    const logResult = await sql`
+    // Log the change (avoid PostgreSQL-only RETURNING for MySQL compatibility)
+    const insertResult: any = await sql`
       INSERT INTO inventory_logs (product_id, user_id, log_type, quantity_changed, reason, previous_quantity, new_quantity) 
-      VALUES (${productResult[0].id}, ${user_id}, ${log_type}, ${quantity_changed}, ${reason}, ${previousQuantity}, ${newQuantity}) 
-      RETURNING *
+      VALUES (${productResult[0].id}, ${user_id}, ${log_type}, ${quantity_changed}, ${reason}, ${previousQuantity}, ${newQuantity})
     `
 
+    // Normalize inserted row for both Postgres (RETURNING rows) and MySQL (result.insertId)
+    let logRow: any = null
+    if (Array.isArray(insertResult) && insertResult.length > 0) {
+      // PostgreSQL (neon) returns inserted rows when RETURNING is used
+      logRow = insertResult[0]
+    } else if (insertResult && typeof insertResult.insertId === "number") {
+      // mysql2 returns an object with insertId — select the inserted row back
+      const sel = await sql`SELECT il.*, p.name as product_name, u.name as user_name FROM inventory_logs il LEFT JOIN products p ON il.product_id = p.id LEFT JOIN users u ON il.user_id = u.id WHERE il.id = ${insertResult.insertId} LIMIT 1`
+      if (Array.isArray(sel)) logRow = sel[0]
+      else logRow = sel
+    } else {
+      // Fallback: select most recent matching log for this product/user
+      const sel = await sql`SELECT il.*, p.name as product_name, u.name as user_name FROM inventory_logs il LEFT JOIN products p ON il.product_id = p.id LEFT JOIN users u ON il.user_id = u.id WHERE il.product_id = ${productResult[0].id} AND il.user_id = ${user_id} ORDER BY il.created_at DESC LIMIT 1`
+      if (Array.isArray(sel)) logRow = sel[0]
+      else logRow = sel
+    }
     // Update server in-memory menu-data (best-effort mapping by product name)
     try {
       const baseName = productResult[0].name
@@ -65,7 +80,7 @@ export async function POST(request: NextRequest) {
       console.warn("[Inventory] Failed to sync in-memory menu-data by name:", e)
     }
 
-    return NextResponse.json(logResult[0], { status: 201 })
+    return NextResponse.json(logRow, { status: 201 })
   } catch (error) {
     console.error("[v0] Inventory POST error:", error)
     return NextResponse.json({ error: "Failed to log inventory change" }, { status: 500 })

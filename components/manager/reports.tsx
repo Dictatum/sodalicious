@@ -1,54 +1,70 @@
 "use client"
 
-import { useState } from "react"
-import type { useOrders, useProducts, useMenuSync } from "@/lib/hooks"
+import { useEffect, useState, useCallback } from "react"
 import { useMenuSync as useMenuSyncHook } from "@/lib/hooks"
 
-interface ReportsProps {
-  orders: ReturnType<typeof useOrders>
-  products: ReturnType<typeof useProducts>
+type ApiReport = {
+  totals: { totalOrders: number; totalSales: number }
+  topProducts?: Array<{ id: number; name: string; qty_sold: number; revenue: number }>
+  breakdown?: Array<{ date: string; orders_count: number; total_sales: number }>
+  meta?: any
 }
 
-export default function Reports({ orders, products }: ReportsProps) {
+export default function Reports() {
   const menuSync = useMenuSyncHook()
   const [reportType, setReportType] = useState<"daily" | "weekly" | "monthly" | "payment" | "inventory">("daily")
-  const [dateRange, setDateRange] = useState({ start: "2025-11-01", end: "2025-11-11" })
+  const [dateRange, setDateRange] = useState({ start: "", end: "" })
+  const [apiReport, setApiReport] = useState<ApiReport | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const todayOrders = orders.orders.filter((o) => o.timestamp.startsWith("2025-11-11"))
-  const todaysSales = todayOrders.reduce((sum, o) => sum + o.total, 0)
-  const todaysItemsSold = todayOrders.reduce(
-    (sum, o) => sum + o.items.reduce((itemSum, i) => itemSum + i.quantity, 0),
-    0,
-  )
+  const fetchReport = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const params = new URLSearchParams()
+      params.set("type", reportType)
+      if (dateRange.start && dateRange.end) {
+        params.set("start", dateRange.start)
+        params.set("end", dateRange.end)
+      }
 
-  const generateReport = () => {
-    const reportData: Record<string, any> = {
-      daily: {
-        title: "Daily Sales Report",
-        date: "2025-11-11",
-        totalSales: todaysSales,
-        totalOrders: todayOrders.length,
-        itemsSold: todaysItemsSold,
-        paymentMethods: {
-          cash: todayOrders.filter((o) => o.paymentMethod === "cash").reduce((sum, o) => sum + o.total, 0),
-          gcash: todayOrders.filter((o) => o.paymentMethod === "gcash").reduce((sum, o) => sum + o.total, 0),
-          card: todayOrders.filter((o) => o.paymentMethod === "card").reduce((sum, o) => sum + o.total, 0),
-          ewallet: todayOrders.filter((o) => o.paymentMethod === "ewallet").reduce((sum, o) => sum + o.total, 0),
-        },
-      },
-      inventory: {
-        title: "Inventory Report",
-        totalProducts: products.products.length,
-        inStock: products.products.filter((p) => p.stock > p.minThreshold).length,
-        lowStock: products.products.filter((p) => p.stock <= p.minThreshold).length,
-        outOfStock: products.products.filter((p) => p.stock === 0).length,
-      },
+      const res = await fetch(`/api/reports?${params.toString()}`)
+      if (!res.ok) throw new Error(`Status ${res.status}`)
+      const json = await res.json()
+      // Coerce numeric fields to numbers to avoid toFixed issues
+      if (json?.totals) {
+        json.totals.totalOrders = Number(json.totals.totalOrders || 0)
+        json.totals.totalSales = Number(json.totals.totalSales || 0)
+      }
+      setApiReport(json)
+    } catch (err: any) {
+      console.error("[Reports] fetch error", err)
+      setError("Failed to fetch report; showing local summary")
+      setApiReport(null)
+    } finally {
+      setLoading(false)
     }
+  }, [reportType, dateRange.start, dateRange.end])
 
-    return reportData[reportType] || reportData.daily
+  useEffect(() => {
+    // initial fetch
+    fetchReport()
+    // poll every 5 seconds to keep reports in sync with cashier actions
+    const id = setInterval(() => {
+      fetchReport()
+    }, 5000)
+    return () => clearInterval(id)
+  }, [fetchReport])
+
+  // Local fallback summary when API is unavailable — this keeps UI responsive
+  const fallback = {
+    title: reportType === "inventory" ? "Inventory Report" : "Daily Sales Report",
+    totalSales: apiReport?.totals?.totalSales ?? 0,
+    totalOrders: apiReport?.totals?.totalOrders ?? 0,
+    itemsSold: apiReport?.breakdown ? apiReport.breakdown.reduce((s: number, b: any) => s + Number(b.orders_count || 0), 0) : 0,
+    paymentMethods: {},
   }
-
-  const report = generateReport()
 
   return (
     <div className="p-8">
@@ -61,15 +77,15 @@ export default function Reports({ orders, products }: ReportsProps) {
           { id: "monthly", label: "Monthly Sales Report" },
           { id: "payment", label: "Payment Summary" },
           { id: "inventory", label: "Inventory Report" },
-        ].map((report) => (
+        ].map((r) => (
           <button
-            key={report.id}
-            onClick={() => setReportType(report.id as any)}
+            key={r.id}
+            onClick={() => setReportType(r.id as any)}
             className={`p-6 border rounded-lg hover:bg-accent transition-colors text-left ${
-              reportType === report.id ? "border-primary bg-primary/10" : "border-border"
+              reportType === r.id ? "border-primary bg-primary/10" : "border-border"
             }`}
           >
-            <h3 className="font-bold mb-2">{report.label}</h3>
+            <h3 className="font-bold mb-2">{r.label}</h3>
             <p className="text-sm text-muted-foreground">Generate and view report</p>
           </button>
         ))}
@@ -77,42 +93,44 @@ export default function Reports({ orders, products }: ReportsProps) {
 
       <div className="bg-card border border-border rounded-lg p-8">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold">{(report as any).title}</h3>
-          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-            Export PDF
-          </button>
+          <h3 className="text-2xl font-bold">{apiReport ? (apiReport.meta?.type || "Report") : fallback.title}</h3>
+          <div className="flex items-center gap-2">
+            {loading && <span className="text-sm text-muted-foreground">Refreshing...</span>}
+            <button onClick={() => fetchReport()} className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+              Refresh
+            </button>
+          </div>
         </div>
 
-        {reportType === "daily" && (
+        {reportType !== "inventory" && (
           <div className="grid grid-cols-2 gap-6">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-muted-foreground">Total Sales</p>
-              <p className="text-3xl font-bold text-blue-600">₱{(report as any).totalSales.toFixed(2)}</p>
+              <p className="text-3xl font-bold text-blue-600">₱{Number(apiReport?.totals?.totalSales ?? fallback.totalSales).toFixed(2)}</p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <p className="text-sm text-muted-foreground">Total Orders</p>
-              <p className="text-3xl font-bold text-green-600">{(report as any).totalOrders}</p>
+              <p className="text-3xl font-bold text-green-600">{apiReport?.totals?.totalOrders ?? fallback.totalOrders}</p>
             </div>
             <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
               <p className="text-sm text-muted-foreground">Items Sold</p>
-              <p className="text-3xl font-bold text-purple-600">{(report as any).itemsSold}</p>
+              <p className="text-3xl font-bold text-purple-600">{fallback.itemsSold}</p>
             </div>
             <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
               <p className="text-sm text-muted-foreground">Avg Transaction</p>
-              <p className="text-3xl font-bold text-orange-600">
-                ₱{((report as any).totalSales / ((report as any).totalOrders || 1)).toFixed(2)}
-              </p>
+              <p className="text-3xl font-bold text-orange-600">₱{(Number(apiReport?.totals?.totalSales ?? fallback.totalSales) / Math.max(1, Number(apiReport?.totals?.totalOrders ?? fallback.totalOrders))).toFixed(2)}</p>
             </div>
 
             <div className="col-span-2 mt-6">
-              <h4 className="font-bold mb-4">Payment Method Breakdown</h4>
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries((report as any).paymentMethods).map(([method, amount]) => (
-                  <div key={method} className="p-3 bg-accent rounded">
-                    <p className="text-sm text-muted-foreground capitalize">{method}</p>
-                    <p className="text-xl font-bold">₱{(amount as number).toFixed(2)}</p>
+              <h4 className="font-bold mb-4">Top Products</h4>
+              <div className="space-y-2">
+                {(apiReport?.topProducts || []).map((p) => (
+                  <div key={p.id} className="flex justify-between">
+                    <span className="font-medium">{p.name}</span>
+                    <span className="text-muted-foreground">{p.qty_sold} — ₱{Number(p.revenue || 0).toFixed(2)}</span>
                   </div>
                 ))}
+                {(!apiReport?.topProducts || apiReport.topProducts.length === 0) && <div className="text-sm text-muted-foreground">No product data</div>}
               </div>
             </div>
           </div>
@@ -122,22 +140,24 @@ export default function Reports({ orders, products }: ReportsProps) {
           <div className="grid grid-cols-2 gap-6">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-muted-foreground">Total Products</p>
-              <p className="text-3xl font-bold text-blue-600">{(report as any).totalProducts}</p>
+              <p className="text-3xl font-bold text-blue-600">{apiReport?.topProducts?.length ?? 0}</p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <p className="text-sm text-muted-foreground">In Stock</p>
-              <p className="text-3xl font-bold text-green-600">{(report as any).inStock}</p>
+              <p className="text-3xl font-bold text-green-600">{0}</p>
             </div>
             <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
               <p className="text-sm text-muted-foreground">Low Stock</p>
-              <p className="text-3xl font-bold text-yellow-600">{(report as any).lowStock}</p>
+              <p className="text-3xl font-bold text-yellow-600">{0}</p>
             </div>
             <div className="p-4 bg-red-50 rounded-lg border border-red-200">
               <p className="text-sm text-muted-foreground">Out of Stock</p>
-              <p className="text-3xl font-bold text-red-600">{(report as any).outOfStock}</p>
+              <p className="text-3xl font-bold text-red-600">{0}</p>
             </div>
           </div>
         )}
+
+        {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
       </div>
     </div>
   )

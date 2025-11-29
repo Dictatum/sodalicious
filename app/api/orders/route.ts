@@ -87,11 +87,15 @@ export async function POST(request: NextRequest) {
       // Insert order into database
       const orderResult = await sql`
         INSERT INTO orders (order_number, cashier_id, customer_name, total_amount, payment_method, order_status) 
-        VALUES (${orderNumber}, ${validCashierId}, ${customer_name}, ${total_amount}, ${payment_method}, 'pending') 
-        RETURNING *
+        VALUES (${orderNumber}, ${validCashierId}, ${customer_name}, ${total_amount}, ${payment_method}, 'pending')
       `
 
-      const orderId = orderResult[0].id
+      // For MySQL, we need to fetch the inserted record separately
+      const insertedOrder = await sql`
+        SELECT * FROM orders WHERE order_number = ${orderNumber}
+      `
+
+      const orderId = insertedOrder[0]?.id || (orderResult as any).insertId
       console.log(`[DB] Order ${orderNumber} created with ID: ${orderId}`)
 
       // Insert order items and update product stock in database (best-effort mapping between menu-data and DB)

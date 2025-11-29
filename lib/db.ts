@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless"
+import mysql from "mysql2/promise"
 
 const connectionString = process.env.DATABASE_URL
 
@@ -6,7 +7,46 @@ if (!connectionString) {
   throw new Error("DATABASE_URL environment variable is not set")
 }
 
-export const sql = neon(connectionString)
+// Detect connection type: PostgreSQL (Neon) or MySQL (XAMPP)
+const isPostgres = connectionString.startsWith("postgresql://")
+const isMysql = connectionString.startsWith("mysql://")
+
+let sql: any
+
+if (isPostgres) {
+  // Use Neon for PostgreSQL
+  sql = neon(connectionString)
+} else if (isMysql) {
+  // Use mysql2 for MySQL/XAMPP
+  const pool = mysql.createPool({
+    uri: connectionString,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+  })
+
+  // Create a wrapper for mysql2 that mimics neon's API
+  sql = async (strings: TemplateStringsArray, ...values: any[]) => {
+    const connection = await pool.getConnection()
+    try {
+      // Build query from template strings
+      let query = strings[0]
+      for (let i = 0; i < values.length; i++) {
+        query += "?" + strings[i + 1]
+      }
+      const [rows] = await connection.query(query, values)
+      return rows
+    } finally {
+      connection.release()
+    }
+  }
+} else {
+  throw new Error(
+    `Unsupported database URL format. Use postgresql:// (Neon) or mysql:// (XAMPP). Got: ${connectionString.split("://")[0]}://`
+  )
+}
+
+export { sql }
 
 // Type definitions for database operations
 export interface User {

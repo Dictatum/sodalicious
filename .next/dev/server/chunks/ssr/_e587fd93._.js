@@ -1250,6 +1250,11 @@ function useDatabaseOrders() {
     }, []);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         fetchOrders();
+        // Poll every 2 seconds for real-time sync
+        const interval = setInterval(()=>{
+            fetchOrders();
+        }, 2000);
+        return ()=>clearInterval(interval);
     }, [
         fetchOrders
     ]);
@@ -1310,28 +1315,30 @@ function useUsers() {
     };
 }
 function useInventoryLogs() {
-    const [logs, setLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([
-        {
-            id: 1,
-            productId: 1,
-            productName: "Iced Calamansi Soda",
-            type: "sale",
-            quantity: 2,
-            timestamp: "2025-11-11 14:30",
-            userId: 1,
-            userName: "Maria Santos"
-        },
-        {
-            id: 2,
-            productId: 2,
-            productName: "Mango Yakult",
-            type: "restock",
-            quantity: 50,
-            reason: "Supplier delivery",
-            timestamp: "2025-11-11 10:15",
-            userId: 2,
-            userName: "Juan Dela Cruz"
+    const [logs, setLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
+    const fetchLogs = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async ()=>{
+        try {
+            setLoading(true);
+            const response = await fetch("/api/inventory");
+            if (!response.ok) throw new Error("Failed to fetch inventory logs");
+            const data = await response.json();
+            setLogs(data || []);
+        } catch (err) {
+            console.error("[Inventory] Error fetching logs:", err);
+        } finally{
+            setLoading(false);
         }
+    }, []);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        fetchLogs();
+        // Poll every 2 seconds for real-time inventory sync
+        const interval = setInterval(()=>{
+            fetchLogs();
+        }, 2000);
+        return ()=>clearInterval(interval);
+    }, [
+        fetchLogs
     ]);
     const addLog = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((log)=>{
         const newLog = {
@@ -1347,7 +1354,9 @@ function useInventoryLogs() {
     ]);
     return {
         logs,
-        addLog
+        addLog,
+        refetch: fetchLogs,
+        loading
     };
 }
 function useActivityLogs() {
@@ -1369,7 +1378,6 @@ function useActivityLogs() {
         addLog
     };
 }
-;
 function useMenuSync() {
     const [menuItems, setMenuItems] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$menu$2d$data$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getBaseMenuItems"])());
     const [categories] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$menu$2d$data$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MENU_CATEGORIES"]);
@@ -3589,7 +3597,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 function OrderManagement({ orders }) {
     const [filterStatus, setFilterStatus] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("all");
     const [expandedOrderId, setExpandedOrderId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
-    const filteredOrders = orders.orders.filter((o)=>filterStatus === "all" || o.status === filterStatus);
+    const filteredOrders = orders.orders.filter((o)=>filterStatus === "all" || (o.order_status ?? o.status) === filterStatus);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "p-8",
         children: [
@@ -3705,7 +3713,7 @@ function OrderManagement({ orders }) {
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                             className: "px-6 py-4",
-                                            children: order.customer
+                                            children: order.customer_name ?? order.customer ?? "—"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/order-management.tsx",
                                             lineNumber: 52,
@@ -3715,7 +3723,7 @@ function OrderManagement({ orders }) {
                                             className: "px-6 py-4",
                                             children: [
                                                 "₱",
-                                                order.total.toFixed(2)
+                                                Number(order.total_amount ?? order.total ?? 0).toFixed(2)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/manager/order-management.tsx",
@@ -3724,34 +3732,10 @@ function OrderManagement({ orders }) {
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                             className: "px-6 py-4",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                value: order.status,
-                                                onChange: (e)=>orders.updateOrderStatus(order.id, e.target.value),
-                                                className: `px-3 py-1 rounded text-sm font-bold border-0 ${order.status === "Completed" ? "bg-green-100 text-green-700" : order.status === "Preparing" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`,
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        children: "Pending"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 66,
-                                                        columnNumber: 21
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        children: "Preparing"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 67,
-                                                        columnNumber: 21
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        children: "Completed"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 68,
-                                                        columnNumber: 21
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: `px-3 py-1 rounded text-sm font-bold ${(order.order_status ?? order.status) === "Completed" ? "bg-green-100 text-green-700" : (order.order_status ?? order.status) === "Preparing" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`,
+                                                children: order.order_status ?? order.status ?? "Pending"
+                                            }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
                                                 lineNumber: 55,
                                                 columnNumber: 19
@@ -3763,26 +3747,26 @@ function OrderManagement({ orders }) {
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                             className: "px-6 py-4",
-                                            children: order.timestamp
+                                            children: order.created_at ?? order.timestamp ?? "-"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/order-management.tsx",
-                                            lineNumber: 71,
+                                            lineNumber: 62,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                             className: "px-6 py-4",
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>setExpandedOrderId(expandedOrderId === order.id ? null : order.id),
+                                                onClick: ()=>setExpandedOrderId(expandedOrderId === String(order.id) ? null : String(order.id)),
                                                 className: "px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200",
-                                                children: expandedOrderId === order.id ? "Hide" : "View"
+                                                children: expandedOrderId === String(order.id) ? "Hide" : "View"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 73,
+                                                lineNumber: 64,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/order-management.tsx",
-                                            lineNumber: 72,
+                                            lineNumber: 63,
                                             columnNumber: 17
                                         }, this)
                                     ]
@@ -3810,7 +3794,7 @@ function OrderManagement({ orders }) {
             expandedOrderId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "mt-8 bg-card border border-border rounded-lg p-6",
                 children: (()=>{
-                    const order = orders.orders.find((o)=>o.id === expandedOrderId);
+                    const order = orders.orders.find((o)=>String(o.id) === expandedOrderId);
                     return order ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -3821,7 +3805,7 @@ function OrderManagement({ orders }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/order-management.tsx",
-                                lineNumber: 92,
+                                lineNumber: 83,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3834,21 +3818,21 @@ function OrderManagement({ orders }) {
                                                 children: "Customer"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 95,
+                                                lineNumber: 86,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "font-bold",
-                                                children: order.customer
+                                                children: order.customer_name ?? order.customer ?? "—"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 96,
+                                                lineNumber: 87,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/order-management.tsx",
-                                        lineNumber: 94,
+                                        lineNumber: 85,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3858,21 +3842,21 @@ function OrderManagement({ orders }) {
                                                 children: "Cashier"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 99,
+                                                lineNumber: 90,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "font-bold",
-                                                children: order.cashierName || "N/A"
+                                                children: order.cashier_name ?? order.cashierName ?? "N/A"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 100,
+                                                lineNumber: 91,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/order-management.tsx",
-                                        lineNumber: 98,
+                                        lineNumber: 89,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3882,21 +3866,21 @@ function OrderManagement({ orders }) {
                                                 children: "Payment Method"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 103,
+                                                lineNumber: 94,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "font-bold capitalize",
-                                                children: order.paymentMethod
+                                                children: order.payment_method ?? order.paymentMethod ?? "—"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 104,
+                                                lineNumber: 95,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/order-management.tsx",
-                                        lineNumber: 102,
+                                        lineNumber: 93,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3906,27 +3890,27 @@ function OrderManagement({ orders }) {
                                                 children: "Date/Time"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 107,
+                                                lineNumber: 98,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "font-bold",
-                                                children: order.timestamp
+                                                children: order.created_at ?? order.timestamp ?? "-"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 108,
+                                                lineNumber: 99,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/order-management.tsx",
-                                        lineNumber: 106,
+                                        lineNumber: 97,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/order-management.tsx",
-                                lineNumber: 93,
+                                lineNumber: 84,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3937,149 +3921,165 @@ function OrderManagement({ orders }) {
                                         children: "Items"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/order-management.tsx",
-                                        lineNumber: 112,
+                                        lineNumber: 103,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "space-y-2",
-                                        children: order.items.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        children: Array.isArray(order.items) && order.items.length > 0 ? order.items.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "flex justify-between",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         children: [
-                                                            item.quantity,
+                                                            item.quantity ?? item.qty,
                                                             "x ",
-                                                            item.name
+                                                            item.name ?? item.product_name
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 116,
-                                                        columnNumber: 25
+                                                        lineNumber: 108,
+                                                        columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         children: [
                                                             "₱",
-                                                            (item.price * item.quantity).toFixed(2)
+                                                            Number((item.price ?? item.unit_price ?? 0) * (item.quantity ?? item.qty ?? 0)).toFixed(2)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 119,
-                                                        columnNumber: 25
+                                                        lineNumber: 111,
+                                                        columnNumber: 27
                                                     }, this)
                                                 ]
-                                            }, item.id, true, {
+                                            }, item.id ?? `${item.name}-${item.quantity}`, true, {
                                                 fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 115,
-                                                columnNumber: 23
-                                            }, this))
+                                                lineNumber: 107,
+                                                columnNumber: 25
+                                            }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "text-sm text-muted-foreground",
+                                            children: "No item details available."
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/manager/order-management.tsx",
+                                            lineNumber: 115,
+                                            columnNumber: 23
+                                        }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/order-management.tsx",
-                                        lineNumber: 113,
+                                        lineNumber: 104,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "border-t border-border mt-4 pt-4 space-y-1 font-bold",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex justify-between",
+                                        children: (()=>{
+                                            const items = Array.isArray(order.items) ? order.items : [];
+                                            const subtotal = items.reduce((s, it)=>s + Number((it.price ?? it.unit_price ?? 0) * (it.quantity ?? it.qty ?? 0)), 0);
+                                            const displayedSubtotal = subtotal > 0 ? subtotal : Number(order.subtotal ?? order.sub_total ?? 0);
+                                            const tax = Number(order.tax ?? order.tax_amount ?? 0);
+                                            const total = Number(order.total_amount ?? order.total ?? displayedSubtotal + tax);
+                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                                                 children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        children: "Subtotal:"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 125,
-                                                        columnNumber: 23
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "flex justify-between",
                                                         children: [
-                                                            "₱",
-                                                            order.subtotal.toFixed(2)
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: "Subtotal:"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/manager/order-management.tsx",
+                                                                lineNumber: 129,
+                                                                columnNumber: 29
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: [
+                                                                    "₱",
+                                                                    displayedSubtotal.toFixed(2)
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/components/manager/order-management.tsx",
+                                                                lineNumber: 130,
+                                                                columnNumber: 29
+                                                            }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 126,
-                                                        columnNumber: 23
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 124,
-                                                columnNumber: 21
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex justify-between",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        children: "Tax:"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 129,
-                                                        columnNumber: 23
+                                                        lineNumber: 128,
+                                                        columnNumber: 27
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "flex justify-between",
                                                         children: [
-                                                            "₱",
-                                                            order.tax.toFixed(2)
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: "Tax:"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/manager/order-management.tsx",
+                                                                lineNumber: 133,
+                                                                columnNumber: 29
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: [
+                                                                    "₱",
+                                                                    tax.toFixed(2)
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/components/manager/order-management.tsx",
+                                                                lineNumber: 134,
+                                                                columnNumber: 29
+                                                            }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 130,
-                                                        columnNumber: 23
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 128,
-                                                columnNumber: 21
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex justify-between text-lg",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        children: "Total:"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 133,
-                                                        columnNumber: 23
+                                                        lineNumber: 132,
+                                                        columnNumber: 27
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "flex justify-between text-lg",
                                                         children: [
-                                                            "₱",
-                                                            order.total.toFixed(2)
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: "Total:"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/manager/order-management.tsx",
+                                                                lineNumber: 137,
+                                                                columnNumber: 29
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: [
+                                                                    "₱",
+                                                                    total.toFixed(2)
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/components/manager/order-management.tsx",
+                                                                lineNumber: 138,
+                                                                columnNumber: 29
+                                                            }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/order-management.tsx",
-                                                        lineNumber: 134,
-                                                        columnNumber: 23
+                                                        lineNumber: 136,
+                                                        columnNumber: 27
                                                     }, this)
                                                 ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/components/manager/order-management.tsx",
-                                                lineNumber: 132,
-                                                columnNumber: 21
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
+                                            }, void 0, true);
+                                        })()
+                                    }, void 0, false, {
                                         fileName: "[project]/components/manager/order-management.tsx",
-                                        lineNumber: 123,
+                                        lineNumber: 118,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/order-management.tsx",
-                                lineNumber: 111,
+                                lineNumber: 102,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/order-management.tsx",
-                        lineNumber: 91,
+                        lineNumber: 82,
                         columnNumber: 15
                     }, this) : null;
                 })()
             }, void 0, false, {
                 fileName: "[project]/components/manager/order-management.tsx",
-                lineNumber: 87,
+                lineNumber: 78,
                 columnNumber: 9
             }, this)
         ]
@@ -4514,42 +4514,66 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$hooks$2e$ts__$5b$app$
 ;
 ;
 ;
-function Reports({ orders, products }) {
+function Reports() {
     const menuSync = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$hooks$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMenuSync"])();
     const [reportType, setReportType] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("daily");
     const [dateRange, setDateRange] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
-        start: "2025-11-01",
-        end: "2025-11-11"
+        start: "",
+        end: ""
     });
-    const todayOrders = orders.orders.filter((o)=>o.timestamp.startsWith("2025-11-11"));
-    const todaysSales = todayOrders.reduce((sum, o)=>sum + o.total, 0);
-    const todaysItemsSold = todayOrders.reduce((sum, o)=>sum + o.items.reduce((itemSum, i)=>itemSum + i.quantity, 0), 0);
-    const generateReport = ()=>{
-        const reportData = {
-            daily: {
-                title: "Daily Sales Report",
-                date: "2025-11-11",
-                totalSales: todaysSales,
-                totalOrders: todayOrders.length,
-                itemsSold: todaysItemsSold,
-                paymentMethods: {
-                    cash: todayOrders.filter((o)=>o.paymentMethod === "cash").reduce((sum, o)=>sum + o.total, 0),
-                    gcash: todayOrders.filter((o)=>o.paymentMethod === "gcash").reduce((sum, o)=>sum + o.total, 0),
-                    card: todayOrders.filter((o)=>o.paymentMethod === "card").reduce((sum, o)=>sum + o.total, 0),
-                    ewallet: todayOrders.filter((o)=>o.paymentMethod === "ewallet").reduce((sum, o)=>sum + o.total, 0)
-                }
-            },
-            inventory: {
-                title: "Inventory Report",
-                totalProducts: products.products.length,
-                inStock: products.products.filter((p)=>p.stock > p.minThreshold).length,
-                lowStock: products.products.filter((p)=>p.stock <= p.minThreshold).length,
-                outOfStock: products.products.filter((p)=>p.stock === 0).length
+    const [apiReport, setApiReport] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const fetchReport = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async ()=>{
+        setLoading(true);
+        setError(null);
+        try {
+            const params = new URLSearchParams();
+            params.set("type", reportType);
+            if (dateRange.start && dateRange.end) {
+                params.set("start", dateRange.start);
+                params.set("end", dateRange.end);
             }
-        };
-        return reportData[reportType] || reportData.daily;
+            const res = await fetch(`/api/reports?${params.toString()}`);
+            if (!res.ok) throw new Error(`Status ${res.status}`);
+            const json = await res.json();
+            // Coerce numeric fields to numbers to avoid toFixed issues
+            if (json?.totals) {
+                json.totals.totalOrders = Number(json.totals.totalOrders || 0);
+                json.totals.totalSales = Number(json.totals.totalSales || 0);
+            }
+            setApiReport(json);
+        } catch (err) {
+            console.error("[Reports] fetch error", err);
+            setError("Failed to fetch report; showing local summary");
+            setApiReport(null);
+        } finally{
+            setLoading(false);
+        }
+    }, [
+        reportType,
+        dateRange.start,
+        dateRange.end
+    ]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        // initial fetch
+        fetchReport();
+        // poll every 5 seconds to keep reports in sync with cashier actions
+        const id = setInterval(()=>{
+            fetchReport();
+        }, 5000);
+        return ()=>clearInterval(id);
+    }, [
+        fetchReport
+    ]);
+    // Local fallback summary when API is unavailable — this keeps UI responsive
+    const fallback = {
+        title: reportType === "inventory" ? "Inventory Report" : "Daily Sales Report",
+        totalSales: apiReport?.totals?.totalSales ?? 0,
+        totalOrders: apiReport?.totals?.totalOrders ?? 0,
+        itemsSold: apiReport?.breakdown ? apiReport.breakdown.reduce((s, b)=>s + Number(b.orders_count || 0), 0) : 0,
+        paymentMethods: {}
     };
-    const report = generateReport();
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "p-8",
         children: [
@@ -4558,7 +4582,7 @@ function Reports({ orders, products }) {
                 children: "Reports"
             }, void 0, false, {
                 fileName: "[project]/components/manager/reports.tsx",
-                lineNumber: 55,
+                lineNumber: 71,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4584,16 +4608,16 @@ function Reports({ orders, products }) {
                         id: "inventory",
                         label: "Inventory Report"
                     }
-                ].map((report)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: ()=>setReportType(report.id),
-                        className: `p-6 border rounded-lg hover:bg-accent transition-colors text-left ${reportType === report.id ? "border-primary bg-primary/10" : "border-border"}`,
+                ].map((r)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: ()=>setReportType(r.id),
+                        className: `p-6 border rounded-lg hover:bg-accent transition-colors text-left ${reportType === r.id ? "border-primary bg-primary/10" : "border-border"}`,
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                 className: "font-bold mb-2",
-                                children: report.label
+                                children: r.label
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 72,
+                                lineNumber: 88,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4601,18 +4625,18 @@ function Reports({ orders, products }) {
                                 children: "Generate and view report"
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 73,
+                                lineNumber: 89,
                                 columnNumber: 13
                             }, this)
                         ]
-                    }, report.id, true, {
+                    }, r.id, true, {
                         fileName: "[project]/components/manager/reports.tsx",
-                        lineNumber: 65,
+                        lineNumber: 81,
                         columnNumber: 11
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/components/manager/reports.tsx",
-                lineNumber: 57,
+                lineNumber: 73,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4623,27 +4647,45 @@ function Reports({ orders, products }) {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                 className: "text-2xl font-bold",
-                                children: report.title
+                                children: apiReport ? apiReport.meta?.type || "Report" : fallback.title
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 80,
+                                lineNumber: 96,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                className: "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90",
-                                children: "Export PDF"
-                            }, void 0, false, {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-2",
+                                children: [
+                                    loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "text-sm text-muted-foreground",
+                                        children: "Refreshing..."
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/manager/reports.tsx",
+                                        lineNumber: 98,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>fetchReport(),
+                                        className: "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90",
+                                        children: "Refresh"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/manager/reports.tsx",
+                                        lineNumber: 99,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 81,
+                                lineNumber: 97,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/reports.tsx",
-                        lineNumber: 79,
+                        lineNumber: 95,
                         columnNumber: 9
                     }, this),
-                    reportType === "daily" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    reportType !== "inventory" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "grid grid-cols-2 gap-6",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4654,24 +4696,24 @@ function Reports({ orders, products }) {
                                         children: "Total Sales"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 89,
+                                        lineNumber: 108,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-blue-600",
                                         children: [
                                             "₱",
-                                            report.totalSales.toFixed(2)
+                                            Number(apiReport?.totals?.totalSales ?? fallback.totalSales).toFixed(2)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 90,
+                                        lineNumber: 109,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 88,
+                                lineNumber: 107,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4682,21 +4724,21 @@ function Reports({ orders, products }) {
                                         children: "Total Orders"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 93,
+                                        lineNumber: 112,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-green-600",
-                                        children: report.totalOrders
+                                        children: apiReport?.totals?.totalOrders ?? fallback.totalOrders
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 94,
+                                        lineNumber: 113,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 92,
+                                lineNumber: 111,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4707,21 +4749,21 @@ function Reports({ orders, products }) {
                                         children: "Items Sold"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 97,
+                                        lineNumber: 116,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-purple-600",
-                                        children: report.itemsSold
+                                        children: fallback.itemsSold
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 98,
+                                        lineNumber: 117,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 96,
+                                lineNumber: 115,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4732,24 +4774,24 @@ function Reports({ orders, products }) {
                                         children: "Avg Transaction"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 101,
+                                        lineNumber: 120,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-orange-600",
                                         children: [
                                             "₱",
-                                            (report.totalSales / (report.totalOrders || 1)).toFixed(2)
+                                            (Number(apiReport?.totals?.totalSales ?? fallback.totalSales) / Math.max(1, Number(apiReport?.totals?.totalOrders ?? fallback.totalOrders))).toFixed(2)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 102,
+                                        lineNumber: 121,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 100,
+                                lineNumber: 119,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4757,57 +4799,68 @@ function Reports({ orders, products }) {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
                                         className: "font-bold mb-4",
-                                        children: "Payment Method Breakdown"
+                                        children: "Top Products"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 108,
+                                        lineNumber: 125,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "grid grid-cols-2 gap-4",
-                                        children: Object.entries(report.paymentMethods).map(([method, amount])=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "p-3 bg-accent rounded",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                        className: "text-sm text-muted-foreground capitalize",
-                                                        children: method
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/manager/reports.tsx",
-                                                        lineNumber: 112,
-                                                        columnNumber: 21
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                        className: "text-xl font-bold",
-                                                        children: [
-                                                            "₱",
-                                                            amount.toFixed(2)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/manager/reports.tsx",
-                                                        lineNumber: 113,
-                                                        columnNumber: 21
-                                                    }, this)
-                                                ]
-                                            }, method, true, {
+                                        className: "space-y-2",
+                                        children: [
+                                            (apiReport?.topProducts || []).map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex justify-between",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "font-medium",
+                                                            children: p.name
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/manager/reports.tsx",
+                                                            lineNumber: 129,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-muted-foreground",
+                                                            children: [
+                                                                p.qty_sold,
+                                                                " — ₱",
+                                                                Number(p.revenue || 0).toFixed(2)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/manager/reports.tsx",
+                                                            lineNumber: 130,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    ]
+                                                }, p.id, true, {
+                                                    fileName: "[project]/components/manager/reports.tsx",
+                                                    lineNumber: 128,
+                                                    columnNumber: 19
+                                                }, this)),
+                                            (!apiReport?.topProducts || apiReport.topProducts.length === 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-sm text-muted-foreground",
+                                                children: "No product data"
+                                            }, void 0, false, {
                                                 fileName: "[project]/components/manager/reports.tsx",
-                                                lineNumber: 111,
-                                                columnNumber: 19
-                                            }, this))
-                                    }, void 0, false, {
+                                                lineNumber: 133,
+                                                columnNumber: 85
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 109,
+                                        lineNumber: 126,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 107,
+                                lineNumber: 124,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/reports.tsx",
-                        lineNumber: 87,
+                        lineNumber: 106,
                         columnNumber: 11
                     }, this),
                     reportType === "inventory" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4821,21 +4874,21 @@ function Reports({ orders, products }) {
                                         children: "Total Products"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 124,
+                                        lineNumber: 142,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-blue-600",
-                                        children: report.totalProducts
+                                        children: apiReport?.topProducts?.length ?? 0
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 125,
+                                        lineNumber: 143,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 123,
+                                lineNumber: 141,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4846,21 +4899,21 @@ function Reports({ orders, products }) {
                                         children: "In Stock"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 128,
+                                        lineNumber: 146,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-green-600",
-                                        children: report.inStock
+                                        children: 0
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 129,
+                                        lineNumber: 147,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 127,
+                                lineNumber: 145,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4871,21 +4924,21 @@ function Reports({ orders, products }) {
                                         children: "Low Stock"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 132,
+                                        lineNumber: 150,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-yellow-600",
-                                        children: report.lowStock
+                                        children: 0
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 133,
+                                        lineNumber: 151,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 131,
+                                lineNumber: 149,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4896,39 +4949,47 @@ function Reports({ orders, products }) {
                                         children: "Out of Stock"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 136,
+                                        lineNumber: 154,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-3xl font-bold text-red-600",
-                                        children: report.outOfStock
+                                        children: 0
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/reports.tsx",
-                                        lineNumber: 137,
+                                        lineNumber: 155,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/reports.tsx",
-                                lineNumber: 135,
+                                lineNumber: 153,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/reports.tsx",
-                        lineNumber: 122,
+                        lineNumber: 140,
                         columnNumber: 11
+                    }, this),
+                    error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "mt-4 text-sm text-destructive",
+                        children: error
+                    }, void 0, false, {
+                        fileName: "[project]/components/manager/reports.tsx",
+                        lineNumber: 160,
+                        columnNumber: 19
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/manager/reports.tsx",
-                lineNumber: 78,
+                lineNumber: 94,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/manager/reports.tsx",
-        lineNumber: 54,
+        lineNumber: 70,
         columnNumber: 5
     }, this);
 }
@@ -4947,8 +5008,17 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$hooks$2e$ts__$5b$app$
 ;
 function ManagerDashboard({ products, orders, inventoryLogs }) {
     const menuSync = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$hooks$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMenuSync"])();
-    const todaysSales = orders.getTodaysSales();
-    const totalOrders = orders.orders.filter((o)=>o.timestamp.startsWith("2025-11-11")).length;
+    // Calculate today's sales from database orders
+    const todaysSales = (orders.orders || []).filter((o)=>{
+        const orderDate = new Date(o.created_at).toDateString();
+        const today = new Date().toDateString();
+        return orderDate === today;
+    }).reduce((sum, o)=>sum + (Number(o.total_amount) || 0), 0);
+    const totalOrders = (orders.orders || []).filter((o)=>{
+        const orderDate = new Date(o.created_at).toDateString();
+        const today = new Date().toDateString();
+        return orderDate === today;
+    }).length;
     const lowStockItems = menuSync.getLowStockItems();
     const topSelling = menuSync.menuItems.slice().sort((a, b)=>b.stock - a.stock).slice(0, 3);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4959,7 +5029,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                 children: "Dashboard"
             }, void 0, false, {
                 fileName: "[project]/components/manager/dashboard.tsx",
-                lineNumber: 26,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4967,11 +5037,11 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatCard, {
                         label: "Total Sales",
-                        value: `₱${todaysSales.toFixed(2)}`,
+                        value: `₱${Number(todaysSales || 0).toFixed(2)}`,
                         color: "bg-blue-100"
                     }, void 0, false, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 30,
+                        lineNumber: 43,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatCard, {
@@ -4980,7 +5050,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                         color: "bg-green-100"
                     }, void 0, false, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 31,
+                        lineNumber: 44,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatCard, {
@@ -4989,7 +5059,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                         color: "bg-yellow-100"
                     }, void 0, false, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 32,
+                        lineNumber: 45,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatCard, {
@@ -4998,13 +5068,13 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                         color: "bg-purple-100"
                     }, void 0, false, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 33,
+                        lineNumber: 46,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/manager/dashboard.tsx",
-                lineNumber: 29,
+                lineNumber: 42,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5018,7 +5088,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                 children: "Top Selling Products"
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 40,
+                                lineNumber: 53,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5033,7 +5103,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                         children: item.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                                        lineNumber: 48,
+                                                        lineNumber: 61,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5044,13 +5114,13 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                                        lineNumber: 49,
+                                                        lineNumber: 62,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 47,
+                                                lineNumber: 60,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5061,24 +5131,24 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 51,
+                                                lineNumber: 64,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, item.id, true, {
                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                        lineNumber: 43,
+                                        lineNumber: 56,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 41,
+                                lineNumber: 54,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 39,
+                        lineNumber: 52,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5089,36 +5159,36 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                 children: "Recent Orders"
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 59,
+                                lineNumber: 72,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-3",
-                                children: orders.orders.slice(-3).map((order)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                children: (orders.orders || []).slice(-3).map((order)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "flex justify-between items-center pb-3 border-b border-border last:border-b-0",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                         className: "font-semibold",
-                                                        children: order.id
+                                                        children: order.order_number
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                                        lineNumber: 67,
+                                                        lineNumber: 80,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                         className: "text-sm text-muted-foreground",
-                                                        children: order.customer
+                                                        children: order.customer_name
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                                        lineNumber: 68,
+                                                        lineNumber: 81,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 66,
+                                                lineNumber: 79,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5128,42 +5198,42 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                         className: "font-bold",
                                                         children: [
                                                             "₱",
-                                                            order.total.toFixed(2)
+                                                            Number(order.total_amount || 0).toFixed(2)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                                        lineNumber: 71,
+                                                        lineNumber: 84,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-xs px-2 py-1 bg-green-100 text-green-700 rounded",
-                                                        children: order.status
+                                                        children: order.order_status
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                                        lineNumber: 72,
+                                                        lineNumber: 85,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 70,
+                                                lineNumber: 83,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, order.id, true, {
                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                        lineNumber: 62,
+                                        lineNumber: 75,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 60,
+                                lineNumber: 73,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 58,
+                        lineNumber: 71,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5174,7 +5244,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                 children: "Low Stock Alert"
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 81,
+                                lineNumber: 94,
                                 columnNumber: 11
                             }, this),
                             lowStockItems.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5182,7 +5252,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                 children: "All items are well-stocked"
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 83,
+                                lineNumber: 96,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-2",
@@ -5194,7 +5264,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                 children: item.name
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 88,
+                                                lineNumber: 101,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5207,24 +5277,24 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 89,
+                                                lineNumber: 102,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, item.id, true, {
                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                        lineNumber: 87,
+                                        lineNumber: 100,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 85,
+                                lineNumber: 98,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 80,
+                        lineNumber: 93,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5235,7 +5305,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                 children: "Payment Methods"
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 100,
+                                lineNumber: 113,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5246,7 +5316,10 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                     "Card",
                                     "E-wallet"
                                 ].map((method)=>{
-                                    const count = orders.orders.filter((o)=>o.paymentMethod === method.toLowerCase().replace("-", "")).length;
+                                    const count = orders.orders.filter((o)=>{
+                                        const pm = (o.payment_method ?? o.paymentMethod ?? "").toString().toLowerCase().replace("-", "");
+                                        return pm === method.toLowerCase().replace("-", "");
+                                    }).length;
                                     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "flex justify-between",
                                         children: [
@@ -5255,7 +5328,7 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                 children: method
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 108,
+                                                lineNumber: 122,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5266,37 +5339,37 @@ function ManagerDashboard({ products, orders, inventoryLogs }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                                lineNumber: 109,
+                                                lineNumber: 123,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, method, true, {
                                         fileName: "[project]/components/manager/dashboard.tsx",
-                                        lineNumber: 107,
+                                        lineNumber: 121,
                                         columnNumber: 17
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/dashboard.tsx",
-                                lineNumber: 101,
+                                lineNumber: 114,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/dashboard.tsx",
-                        lineNumber: 99,
+                        lineNumber: 112,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/manager/dashboard.tsx",
-                lineNumber: 37,
+                lineNumber: 50,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/manager/dashboard.tsx",
-        lineNumber: 25,
+        lineNumber: 38,
         columnNumber: 5
     }, this);
 }
@@ -5309,7 +5382,7 @@ function StatCard({ label, value, color }) {
                 children: label
             }, void 0, false, {
                 fileName: "[project]/components/manager/dashboard.tsx",
-                lineNumber: 123,
+                lineNumber: 137,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5317,13 +5390,13 @@ function StatCard({ label, value, color }) {
                 children: value
             }, void 0, false, {
                 fileName: "[project]/components/manager/dashboard.tsx",
-                lineNumber: 124,
+                lineNumber: 138,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/manager/dashboard.tsx",
-        lineNumber: 122,
+        lineNumber: 136,
         columnNumber: 5
     }, this);
 }

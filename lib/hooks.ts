@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import {
   type Product,
   type Order,
@@ -12,6 +12,7 @@ import {
   mockUsers,
   api,
 } from "./store"
+import type { Order as DBOrder } from "./db"
 import { COMPLETE_MENU, getAllProductVariants, MENU_CATEGORIES, getBaseMenuItems } from "./menu-data"
 
 export function useProducts() {
@@ -98,7 +99,7 @@ export function useOrders() {
 }
 
 export function useDatabaseOrders() {
-  const [orders, setOrders] = useState<Order[]>([])
+  const [orders, setOrders] = useState<DBOrder[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -118,6 +119,11 @@ export function useDatabaseOrders() {
 
   useEffect(() => {
     fetchOrders()
+    // Poll every 2 seconds for real-time sync
+    const interval = setInterval(() => {
+      fetchOrders()
+    }, 2000)
+    return () => clearInterval(interval)
   }, [fetchOrders])
 
   const createOrder = useCallback(async (data: any) => {
@@ -164,29 +170,31 @@ export function useUsers() {
 }
 
 export function useInventoryLogs() {
-  const [logs, setLogs] = useState<InventoryLog[]>([
-    {
-      id: 1,
-      productId: 1,
-      productName: "Iced Calamansi Soda",
-      type: "sale",
-      quantity: 2,
-      timestamp: "2025-11-11 14:30",
-      userId: 1,
-      userName: "Maria Santos",
-    },
-    {
-      id: 2,
-      productId: 2,
-      productName: "Mango Yakult",
-      type: "restock",
-      quantity: 50,
-      reason: "Supplier delivery",
-      timestamp: "2025-11-11 10:15",
-      userId: 2,
-      userName: "Juan Dela Cruz",
-    },
-  ])
+  const [logs, setLogs] = useState<InventoryLog[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchLogs = useCallback(async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/inventory")
+      if (!response.ok) throw new Error("Failed to fetch inventory logs")
+      const data = await response.json()
+      setLogs(data || [])
+    } catch (err) {
+      console.error("[Inventory] Error fetching logs:", err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchLogs()
+    // Poll every 2 seconds for real-time inventory sync
+    const interval = setInterval(() => {
+      fetchLogs()
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [fetchLogs])
 
   const addLog = useCallback(
     (log: Omit<InventoryLog, "id">) => {
@@ -196,7 +204,7 @@ export function useInventoryLogs() {
     [logs],
   )
 
-  return { logs, addLog }
+  return { logs, addLog, refetch: fetchLogs, loading }
 }
 
 export function useActivityLogs() {
@@ -218,7 +226,6 @@ export function useActivityLogs() {
  * Provides synchronized menu data across Cashier, Manager, and Inventory panels
  * Pulls from the central menu-data.ts source
  */
-import { useEffect } from "react"
 
 export function useMenuSync() {
   const [menuItems, setMenuItems] = useState(getBaseMenuItems())

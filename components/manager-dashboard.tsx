@@ -68,7 +68,7 @@ export default function ManagerPanel({ onLogout, currentUser }: ManagerPanelProp
         {activeTab === "products" && <ProductManagement products={products} />}
         {activeTab === "inventory" && <InventoryManagement products={products} inventoryLogs={inventoryLogs} />}
         {activeTab === "orders" && <OrderManagement orders={orders} />}
-        {activeTab === "reports" && <Reports orders={orders} products={products} />}
+        {activeTab === "reports" && <Reports />}
         {activeTab === "users" && <UserManagement users={users} />}
         {activeTab === "logs" && <ActivityLogs />}
       </div>
