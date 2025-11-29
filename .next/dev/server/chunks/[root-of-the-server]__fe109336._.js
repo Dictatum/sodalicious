@@ -182,13 +182,13 @@ async function GET(request) {
         const end = url.searchParams.get("end");
         let whereClause = "1=1";
         if (type === "daily") {
-            whereClause = `DATE(created_at) = DATE(NOW())`;
+            whereClause = `DATE(o.created_at) = DATE(NOW())`;
         } else if (type === "weekly") {
-            whereClause = `created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`;
+            whereClause = `o.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`;
         } else if (type === "monthly") {
-            whereClause = `created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)`;
+            whereClause = `o.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)`;
         } else if (start && end) {
-            whereClause = `DATE(created_at) BETWEEN '${start}' AND '${end}'`;
+            whereClause = `DATE(o.created_at) BETWEEN '${start}' AND '${end}'`;
         }
         // Totals
         const totalsQuery = `
