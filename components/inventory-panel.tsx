@@ -2,12 +2,14 @@
 
 import { useState } from "react"
 import { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+import { updateProductStock } from "@/lib/menu-data"
 
 interface InventoryPanelProps {
   onLogout: () => void
+  currentUser?: any
 }
 
-export default function InventoryPanel({ onLogout }: InventoryPanelProps) {
+export default function InventoryPanel({ onLogout, currentUser }: InventoryPanelProps) {
   const products = useProducts()
   const inventoryLogs = useInventoryLogs()
   const menuSync = useMenuSync()
@@ -49,7 +51,7 @@ export default function InventoryPanel({ onLogout }: InventoryPanelProps) {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        {activeTab === "inventory" && <InventoryView menuSync={menuSync} inventoryLogs={inventoryLogs} />}
+        {activeTab === "inventory" && <InventoryView menuSync={menuSync} inventoryLogs={inventoryLogs} currentUser={currentUser} />}
         {activeTab === "logs" && <StockHistoryView inventoryLogs={inventoryLogs} />}
       </div>
     </div>
@@ -59,27 +61,59 @@ export default function InventoryPanel({ onLogout }: InventoryPanelProps) {
 function InventoryView({
   menuSync,
   inventoryLogs,
-}: { menuSync: ReturnType<typeof useMenuSync>; inventoryLogs: ReturnType<typeof useInventoryLogs> }) {
+  currentUser,
+}: { menuSync: ReturnType<typeof useMenuSync>; inventoryLogs: ReturnType<typeof useInventoryLogs>; currentUser?: any }) {
   const [adjustingId, setAdjustingId] = useState<string | null>(null)
   const [adjustmentData, setAdjustmentData] = useState({ quantity: 0, type: "restock", reason: "" })
 
   const lowStockItems = menuSync.getLowStockItems()
 
-  const handleAdjustment = () => {
+  const handleAdjustment = async () => {
     if (adjustingId) {
       const item = menuSync.getMenuItemById(adjustingId)
       if (item) {
-        // In a real app, this would update via API
-        inventoryLogs.addLog({
-          productId: parseInt(adjustingId),
-          productName: item.name,
-          type: adjustmentData.type as any,
-          quantity: adjustmentData.quantity,
-          reason: adjustmentData.reason,
-          timestamp: new Date().toLocaleString(),
-          userId: 2,
-          userName: "Inventory Officer",
-        })
+        const change = adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity
+        const newStock = (item.stock || 0) + change
+
+        // Update in-memory menu immediately
+        updateProductStock(item.id, newStock)
+
+        // Call API to update SQL and log the inventory change
+        try {
+          const response = await fetch("/api/inventory", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              product_id: item.name, // Send product name as fallback for database lookup
+              user_id: currentUser?.id || 1,
+              log_type: adjustmentData.type,
+              quantity_changed: change,
+              reason: adjustmentData.reason,
+            }),
+          })
+
+          if (response.ok) {
+            console.log("[Inventory] API sync successful")
+            // Update inventory log
+            inventoryLogs.addLog({
+              productId: parseInt(adjustingId),
+              productName: item.name,
+              type: adjustmentData.type as any,
+              quantity: adjustmentData.quantity,
+              reason: adjustmentData.reason,
+              timestamp: new Date().toLocaleString(),
+              userId: currentUser?.id || 1,
+              userName: currentUser?.name || "Inventory Officer",
+            })
+          } else {
+            console.error("[Inventory] API sync failed:", await response.text())
+          }
+        } catch (e) {
+          console.error("[Inventory] API error:", e)
+        }
+
+        // Dispatch update event so manager and cashier panels refresh
+        if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("menu:update"))
 
         setAdjustingId(null)
         setAdjustmentData({ quantity: 0, type: "restock", reason: "" })
@@ -161,7 +195,7 @@ function InventoryView({
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {products.products.map((item) => (
+            {menuSync.menuItems.map((item) => (
               <tr key={item.id} className="hover:bg-primary/5 transition-colors">
                 <td className="px-6 py-4 font-medium text-foreground">{item.name}</td>
                 <td className="px-6 py-4 text-foreground">{item.stock}</td>

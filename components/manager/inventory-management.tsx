@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
 import { useMenuSync as useMenuSyncHook } from "@/lib/hooks"
+import { updateProductStock } from "@/lib/menu-data"
 
 interface InventoryManagementProps {
   products: ReturnType<typeof useProducts>
@@ -23,10 +24,10 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
       if (product) {
         const newStock =
           product.stock + (adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity)
-        products.updateProduct(adjustingProductId, { stock: Math.max(0, newStock) })
+        products.updateProduct(Number(adjustingProductId), { stock: Math.max(0, newStock) })
 
         inventoryLogs.addLog({
-          productId: adjustingProductId,
+          productId: Number(adjustingProductId),
           productName: product.name,
           type: adjustmentData.type as any,
           quantity: adjustmentData.quantity,
@@ -36,10 +37,28 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
           userName: "Current User",
         })
 
+        // update the global in-memory menu and notify other panels
+        syncMenuUpdate(product, adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity)
+
         setAdjustingProductId(null)
         setShowAdjustForm(false)
         setAdjustmentData({ quantity: 0, type: "restock", reason: "" })
       }
+    }
+  }
+
+  // Keep in-memory menu-data in sync and notify other panels
+  const syncMenuUpdate = (prod: any, stockChange: number) => {
+    try {
+      // derive base id (menu-data uses base item ids without size suffix)
+      const baseId = (prod.baseId && prod.baseId.toString()) || prod.id.toString().split("-")[0]
+      // update the global COMPLETE_MENU entry
+      const currentStock = prod.stock || 0
+      const newStock = currentStock + stockChange
+      updateProductStock(baseId, newStock)
+      if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("menu:update"))
+    } catch (e) {
+      console.warn("[menu sync] failed to update in-memory menu:", e)
     }
   }
 
@@ -130,7 +149,7 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
                 <td className="px-6 py-4">
                   <button
                     onClick={() => {
-                      setAdjustingProductId(item.id)
+                      setAdjustingProductId(String(item.id))
                       setShowAdjustForm(true)
                     }}
                     className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"

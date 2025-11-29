@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useProducts, useOrders, useUsers, useInventoryLogs } from "@/lib/hooks"
+import { useProducts, useDatabaseOrders, useUsers, useInventoryLogs } from "@/lib/hooks"
 import ProductManagement from "./manager/product-management"
 import InventoryManagement from "./manager/inventory-management"
 import OrderManagement from "./manager/order-management"
@@ -11,14 +11,15 @@ import Dashboard from "./manager/dashboard"
 
 interface ManagerPanelProps {
   onLogout: () => void
+  currentUser?: any
 }
 
-export default function ManagerPanel({ onLogout }: ManagerPanelProps) {
+export default function ManagerPanel({ onLogout, currentUser }: ManagerPanelProps) {
   const [activeTab, setActiveTab] = useState<
     "dashboard" | "products" | "inventory" | "orders" | "reports" | "users" | "logs"
   >("dashboard")
   const products = useProducts()
-  const orders = useOrders()
+  const orders = useDatabaseOrders()
   const users = useUsers()
   const inventoryLogs = useInventoryLogs()
 

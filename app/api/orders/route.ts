@@ -1,5 +1,5 @@
 import { sql } from "@/lib/db"
-import { deductStock, getProductById } from "@/lib/menu-data"
+import { deductStock, getProductById, setStockByName } from "@/lib/menu-data"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
@@ -58,17 +58,29 @@ export async function POST(request: NextRequest) {
       // First, ensure we have a valid cashier_id by fetching from database
       let validCashierId = cashier_id
       
-      if (!validCashierId) {
+      // Always validate the cashier exists in database
+      let cashierExists = false
+      if (validCashierId) {
+        const cashierCheck = await sql`
+          SELECT id FROM users WHERE id = ${validCashierId} AND role = 'cashier' LIMIT 1
+        `
+        cashierExists = cashierCheck.length > 0
+      }
+      
+      if (!cashierExists) {
         // Get first cashier from database
         const cashiers = await sql`
           SELECT id FROM users WHERE role = 'cashier' LIMIT 1
         `
         if (cashiers.length > 0) {
           validCashierId = cashiers[0].id
-          console.log(`[Order] No cashier provided, using default cashier ID: ${validCashierId}`)
+          console.log(`[Order] Using valid cashier ID from database: ${validCashierId}`)
         } else {
-          console.warn("[Order] No cashiers found in database. Attempting to use ID 1 anyway.")
-          validCashierId = 1
+          console.error("[Order] No cashiers found in database!")
+          return NextResponse.json(
+            { error: "No cashiers available in database. Database may not be seeded." },
+            { status: 500 }
+          )
         }
       }
 
@@ -82,21 +94,57 @@ export async function POST(request: NextRequest) {
       const orderId = orderResult[0].id
       console.log(`[DB] Order ${orderNumber} created with ID: ${orderId}`)
 
-      // Insert order items and update product stock in database
+      // Insert order items and update product stock in database (best-effort mapping between menu-data and DB)
       for (const item of items) {
-        await sql`
-          INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) 
-          VALUES (${orderId}, ${item.product_id}, ${item.quantity}, ${item.price}, ${item.subtotal})
-        `
+        // First, map the menu item ID to database product ID
+        const baseName = String(item.name).split(" (")[0]
+        let dbProduct: any = null
 
-        // Update product stock in database
-        await sql`
-          UPDATE products 
-          SET stock_quantity = stock_quantity - ${item.quantity} 
-          WHERE id = ${item.product_id}
-        `
+        try {
+          // try numeric id mapping
+          if (!Number.isNaN(Number(item.product_id))) {
+            const byId = await sql`SELECT id, name, stock_quantity FROM products WHERE id = ${Number(item.product_id)}`
+            if (byId.length > 0) dbProduct = byId[0]
+          }
 
-        console.log(`[DB] Updated stock for product ${item.product_id}: -${item.quantity} units`)
+          // fallback: try by name
+          if (!dbProduct) {
+            const byName = await sql`SELECT id, name, stock_quantity FROM products WHERE name = ${baseName} LIMIT 1`
+            if (byName.length > 0) dbProduct = byName[0]
+          }
+
+          // If we found the product, use its numeric ID for order_items
+          let dbProductId = dbProduct?.id
+          
+          // If product ID couldn't be resolved, skip order_items insertion to avoid constraint violation
+          if (!dbProductId) {
+            console.warn(`[DB] Could not map product ID for item: ${baseName} / ${item.product_id}. Skipping order_items insertion.`)
+            continue
+          }
+
+          await sql`
+            INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) 
+            VALUES (${orderId}, ${dbProductId}, ${item.quantity}, ${item.price}, ${item.subtotal})
+          `
+
+          if (dbProduct) {
+            const newDbStock = dbProduct.stock_quantity - item.quantity
+            await sql`UPDATE products SET stock_quantity = ${newDbStock} WHERE id = ${dbProduct.id}`
+            // sync server in-memory menu-data to reflect DB change (best-effort)
+            try {
+              setStockByName(dbProduct.name, newDbStock)
+            } catch (e) {
+              console.warn("[Orders] Failed to sync in-memory menu-data after DB update", e)
+            }
+
+            console.log(`[DB] Updated stock for product ${dbProduct.id} (${dbProduct.name}): -${item.quantity} units`)
+          } else {
+            // No DB mapping found; still log and continue
+            console.warn(`[DB] Could not find DB product to update for order item: ${item.product_id} / ${baseName}`)
+          }
+        } catch (err) {
+          console.error("[DB] Error updating product stock for order item", err)
+        }
       }
 
       console.log(`[Order] ✓ Order ${orderNumber} created successfully and database updated`)

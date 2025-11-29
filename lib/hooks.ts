@@ -19,7 +19,7 @@ export function useProducts() {
 
   const addProduct = useCallback(
     (product: Omit<Product, "id">) => {
-      const newProduct = { ...product, id: Math.max(...products.map((p) => p.id), 0) + 1 }
+      const newProduct = { ...product, id: Math.max(...products.map((p) => Number(p.id)), 0) + 1 }
       setProducts([...products, newProduct])
       return newProduct
     },
@@ -66,7 +66,7 @@ export function useDatabaseProducts(category?: string) {
     }
   }, [category])
 
-  useState(() => {
+  useEffect(() => {
     fetchProducts()
   }, [fetchProducts])
 
@@ -116,7 +116,7 @@ export function useDatabaseOrders() {
     }
   }, [])
 
-  useState(() => {
+  useEffect(() => {
     fetchOrders()
   }, [fetchOrders])
 
@@ -218,8 +218,10 @@ export function useActivityLogs() {
  * Provides synchronized menu data across Cashier, Manager, and Inventory panels
  * Pulls from the central menu-data.ts source
  */
+import { useEffect } from "react"
+
 export function useMenuSync() {
-  const [menuItems] = useState(getBaseMenuItems())
+  const [menuItems, setMenuItems] = useState(getBaseMenuItems())
   const [categories] = useState(MENU_CATEGORIES)
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
 
@@ -254,6 +256,43 @@ export function useMenuSync() {
     return menuItems.filter((item) => item.stock <= item.minThreshold)
   }, [menuItems])
 
+  // Listen for external updates (other panels / API actions) and poll DB for cross-client sync
+  useEffect(() => {
+    const onMenuUpdate = () => setMenuItems(getBaseMenuItems())
+    if (typeof window !== "undefined") {
+      window.addEventListener("menu:update", onMenuUpdate)
+    }
+
+    // Poll /api/products to reflect DB-backed stock changes across multiple clients
+    let mounted = true
+    const poll = async () => {
+      try {
+        const res = await fetch("/api/products")
+        if (!res.ok) return
+        const data = await res.json()
+        if (!mounted) return
+        const stockMap = new Map<string, number>(data.map((p: any) => [p.name, p.stock_quantity]))
+        setMenuItems((prev) =>
+          prev.map((mi) => ({ ...mi, stock: stockMap.has(mi.name) ? (stockMap.get(mi.name) as number) : mi.stock })),
+        )
+      } catch (e) {
+        console.warn("[useMenuSync] poll error", e)
+      }
+    }
+
+    // initial poll + interval
+    poll()
+    const id = setInterval(poll, 5000)
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("menu:update", onMenuUpdate)
+      }
+      mounted = false
+      clearInterval(id)
+    }
+  }, [])
+
   return {
     menuItems,
     categories,
@@ -264,5 +303,7 @@ export function useMenuSync() {
     getAllCategories,
     getCategoryEmoji,
     getLowStockItems,
+    // allow manual refresh when needed
+    refresh: () => setMenuItems(getBaseMenuItems()),
   }
 }

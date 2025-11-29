@@ -22,7 +22,7 @@ export default function Reports({ orders, products }: ReportsProps) {
   )
 
   const generateReport = () => {
-    const reportData = {
+    const reportData: Record<string, any> = {
       daily: {
         title: "Daily Sales Report",
         date: "2025-11-11",

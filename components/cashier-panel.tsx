@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useMenuSync } from "@/lib/hooks"
 import { api, type CartItem } from "@/lib/store"
+import { deductStock } from "@/lib/menu-data"
 
 interface CashierPanelProps {
   onLogout: () => void
@@ -98,11 +99,25 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
 
       const order = await api.createOrder(orderData)
 
+      // Update local in-memory menu immediately so UI reflects new stock
+      try {
+        cart.forEach((item) => {
+          if (item.productId) deductStock(item.productId as string, item.quantity)
+        })
+        // notify other hooks/components to refresh their menu view
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("menu:update"))
+        }
+      } catch (e) {
+        console.warn("[menu] local deduct failed:", e)
+      }
+
       setLastOrder({
         ...order,
         items: cart,
         subtotal,
         tax,
+        total,
       })
       setShowReceipt(true)
       setCart([])
@@ -146,15 +161,15 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
             <div className="space-y-1 text-sm font-bold text-foreground">
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span>₱{subtotal.toFixed(2)}</span>
+                <span>₱{lastOrder.subtotal?.toFixed(2) || "0.00"}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax:</span>
-                <span>₱{tax.toFixed(2)}</span>
+                <span>₱{lastOrder.tax?.toFixed(2) || "0.00"}</span>
               </div>
               <div className="flex justify-between text-lg border-t border-border pt-2">
                 <span>Total:</span>
-                <span className="text-primary">₱{total.toFixed(2)}</span>
+                <span className="text-primary">₱{lastOrder.total?.toFixed(2) || lastOrder.total_amount?.toFixed(2) || "0.00"}</span>
               </div>
             </div>
           </div>

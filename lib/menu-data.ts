@@ -46,7 +46,7 @@ export const HOT_COFFEE: MenuItem[] = [
       { size: "L", price: 75 },
     ],
     description: "Smooth espresso with steamed milk",
-    stock: 35,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -60,7 +60,7 @@ export const HOT_COFFEE: MenuItem[] = [
       { size: "L", price: 75 },
     ],
     description: "Espresso with equal parts milk and foam",
-    stock: 32,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -74,7 +74,7 @@ export const HOT_COFFEE: MenuItem[] = [
       { size: "L", price: 80 },
     ],
     description: "Rich espresso with caramel and steamed milk",
-    stock: 28,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -88,7 +88,7 @@ export const HOT_COFFEE: MenuItem[] = [
       { size: "L", price: 80 },
     ],
     description: "Espresso, steamed milk, and chocolate",
-    stock: 30,
+    stock: 40,
     minThreshold: 8,
   },
 ]
@@ -105,7 +105,7 @@ export const ICED_COFFEE: MenuItem[] = [
       { size: "L", price: 65 },
     ],
     description: "Cold espresso with ice and water",
-    stock: 45,
+    stock: 40,
     minThreshold: 12,
   },
   {
@@ -118,7 +118,7 @@ export const ICED_COFFEE: MenuItem[] = [
       { size: "L", price: 75 },
     ],
     description: "Smooth iced espresso with cold milk",
-    stock: 42,
+    stock: 40,
     minThreshold: 12,
   },
   {
@@ -131,7 +131,7 @@ export const ICED_COFFEE: MenuItem[] = [
       { size: "L", price: 80 },
     ],
     description: "Iced espresso with caramel and milk",
-    stock: 38,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -157,7 +157,7 @@ export const ICED_COFFEE: MenuItem[] = [
       { size: "L", price: 80 },
     ],
     description: "Iced espresso with chocolate and milk",
-    stock: 35,
+    stock: 40,
     minThreshold: 10,
   },
 ]
@@ -171,7 +171,7 @@ export const FRAPPES: MenuItem[] = [
     categoryCode: "FR",
     sizes: [{ size: "16oz", price: 75 }],
     description: "Blended chocolate frappe with whipped cream",
-    stock: 25,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -181,7 +181,7 @@ export const FRAPPES: MenuItem[] = [
     categoryCode: "FR",
     sizes: [{ size: "16oz", price: 75 }],
     description: "Blended caramel frappe with whipped cream",
-    stock: 23,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -191,7 +191,7 @@ export const FRAPPES: MenuItem[] = [
     categoryCode: "FR",
     sizes: [{ size: "16oz", price: 80 }],
     description: "Cookies and cream blended frappe",
-    stock: 20,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -201,7 +201,7 @@ export const FRAPPES: MenuItem[] = [
     categoryCode: "FR",
     sizes: [{ size: "16oz", price: 85 }],
     description: "Blended matcha frappe with whipped cream",
-    stock: 18,
+    stock: 40,
     minThreshold: 6,
   },
   {
@@ -211,7 +211,7 @@ export const FRAPPES: MenuItem[] = [
     categoryCode: "FR",
     sizes: [{ size: "16oz", price: 80 }],
     description: "Coffee frappe with coffee jelly bits",
-    stock: 22,
+    stock: 40,
     minThreshold: 8,
   },
 ]
@@ -228,7 +228,7 @@ export const SODA_SERIES: MenuItem[] = [
       { size: "L", price: 65 },
     ],
     description: "Refreshing blue lemon carbonated drink",
-    stock: 50,
+    stock: 40,
     minThreshold: 15,
   },
   {
@@ -241,7 +241,7 @@ export const SODA_SERIES: MenuItem[] = [
       { size: "L", price: 65 },
     ],
     description: "Sweet strawberry flavored soda",
-    stock: 48,
+    stock: 40,
     minThreshold: 15,
   },
   {
@@ -254,7 +254,7 @@ export const SODA_SERIES: MenuItem[] = [
       { size: "L", price: 65 },
     ],
     description: "Crisp green apple soda",
-    stock: 45,
+    stock: 40,
     minThreshold: 15,
   },
   {
@@ -280,7 +280,7 @@ export const SODA_SERIES: MenuItem[] = [
       { size: "L", price: 70 },
     ],
     description: "Tropical mango soda explosion",
-    stock: 42,
+    stock: 40,
     minThreshold: 12,
   },
 ]
@@ -297,7 +297,7 @@ export const YAKULT_SERIES: MenuItem[] = [
       { size: "L", price: 70 },
     ],
     description: "Probiotic blue flavored Yakult",
-    stock: 35,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -310,7 +310,7 @@ export const YAKULT_SERIES: MenuItem[] = [
       { size: "L", price: 70 },
     ],
     description: "Probiotic strawberry Yakult",
-    stock: 38,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -323,7 +323,7 @@ export const YAKULT_SERIES: MenuItem[] = [
       { size: "L", price: 70 },
     ],
     description: "Probiotic green apple Yakult",
-    stock: 32,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -336,7 +336,7 @@ export const YAKULT_SERIES: MenuItem[] = [
       { size: "L", price: 70 },
     ],
     description: "Probiotic mango Yakult",
-    stock: 36,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -349,7 +349,7 @@ export const YAKULT_SERIES: MenuItem[] = [
       { size: "L", price: 70 },
     ],
     description: "Probiotic lychee Yakult",
-    stock: 33,
+    stock: 40,
     minThreshold: 10,
   },
 ]
@@ -366,7 +366,7 @@ export const MATCHA_SERIES: MenuItem[] = [
       { size: "L", price: 80 },
     ],
     description: "Traditional matcha powder blend",
-    stock: 28,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -379,7 +379,7 @@ export const MATCHA_SERIES: MenuItem[] = [
       { size: "L", price: 85 },
     ],
     description: "Matcha with steamed milk",
-    stock: 26,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -392,7 +392,7 @@ export const MATCHA_SERIES: MenuItem[] = [
       { size: "L", price: 90 },
     ],
     description: "Matcha with caramel drizzle",
-    stock: 22,
+    stock: 40,
     minThreshold: 6,
   },
   {
@@ -405,7 +405,7 @@ export const MATCHA_SERIES: MenuItem[] = [
       { size: "L", price: 85 },
     ],
     description: "Matcha with vanilla essence",
-    stock: 24,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -418,7 +418,7 @@ export const MATCHA_SERIES: MenuItem[] = [
       { size: "L", price: 95 },
     ],
     description: "Matcha with espresso shot",
-    stock: 20,
+    stock: 40,
     minThreshold: 6,
   },
 ]
@@ -432,7 +432,7 @@ export const COMBO_MEALS: MenuItem[] = [
     categoryCode: "CM",
     sizes: [{ size: "Combo", price: 99 }],
     description: "Regular Fries + Regular Soda",
-    stock: 30,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -442,7 +442,7 @@ export const COMBO_MEALS: MenuItem[] = [
     categoryCode: "CM",
     sizes: [{ size: "Combo", price: 110 }],
     description: "Siomai Rice + Regular Soda",
-    stock: 25,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -452,7 +452,7 @@ export const COMBO_MEALS: MenuItem[] = [
     categoryCode: "CM",
     sizes: [{ size: "Combo", price: 120 }],
     description: "Cheeseburger + Regular Soda",
-    stock: 22,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -462,7 +462,7 @@ export const COMBO_MEALS: MenuItem[] = [
     categoryCode: "CM",
     sizes: [{ size: "Combo", price: 115 }],
     description: "6pcs Nuggets + Regular Soda",
-    stock: 28,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -472,7 +472,7 @@ export const COMBO_MEALS: MenuItem[] = [
     categoryCode: "CM",
     sizes: [{ size: "Combo", price: 99 }],
     description: "Hotdog Sandwich + Regular Soda",
-    stock: 32,
+    stock: 40,
     minThreshold: 10,
   },
 ]
@@ -489,7 +489,7 @@ export const SNACKS: MenuItem[] = [
       { size: "Lrg", price: 60 },
     ],
     description: "Crispy golden fries",
-    stock: 50,
+    stock: 40,
     minThreshold: 15,
   },
   {
@@ -499,7 +499,7 @@ export const SNACKS: MenuItem[] = [
     categoryCode: "SN",
     sizes: [{ size: "Solo", price: 45 }],
     description: "Crispy prawn cracker",
-    stock: 35,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -509,7 +509,7 @@ export const SNACKS: MenuItem[] = [
     categoryCode: "SN",
     sizes: [{ size: "Solo", price: 60 }],
     description: "Cheese nachos with dip",
-    stock: 28,
+    stock: 40,
     minThreshold: 8,
   },
   {
@@ -519,7 +519,7 @@ export const SNACKS: MenuItem[] = [
     categoryCode: "SN",
     sizes: [{ size: "6 pcs", price: 50 }],
     description: "Golden fried cheese sticks",
-    stock: 32,
+    stock: 40,
     minThreshold: 10,
   },
   {
@@ -529,7 +529,7 @@ export const SNACKS: MenuItem[] = [
     categoryCode: "SN",
     sizes: [{ size: "Solo", price: 55 }],
     description: "Siomai served with rice",
-    stock: 30,
+    stock: 40,
     minThreshold: 10,
   },
 ]
@@ -635,6 +635,27 @@ export function updateProductStock(productId: string, newStock: number): boolean
   const item = COMPLETE_MENU.find((i) => i.id === productId)
   if (!item) return false
   
+  item.stock = Math.max(0, newStock)
+  return true
+}
+
+// Find a menu item by base name (e.g. "Americano")
+export function findMenuItemByName(baseName: string) {
+  return COMPLETE_MENU.find((i) => i.name === baseName)
+}
+
+// Adjust stock by a delta using the base product name. Positive delta = restock.
+export function changeStockByName(baseName: string, delta: number): boolean {
+  const item = findMenuItemByName(baseName)
+  if (!item) return false
+  item.stock = Math.max(0, item.stock + delta)
+  return true
+}
+
+// Set absolute stock by base product name.
+export function setStockByName(baseName: string, newStock: number): boolean {
+  const item = findMenuItemByName(baseName)
+  if (!item) return false
   item.stock = Math.max(0, newStock)
   return true
 }

@@ -152,34 +152,39 @@ export default function ProductManagement({ products }: ProductManagementProps) 
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {menuSync.menuItems.map((item) => (
-              <tr key={item.id} className="hover:bg-accent/50">
-                <td className="px-6 py-4">{item.name}</td>
-                <td className="px-6 py-4">{item.category}</td>
-                <td className="px-6 py-4">{item.size || "—"}</td>
-                <td className="px-6 py-4">₱{item.price}</td>
-                <td className="px-6 py-4">
-                  <span className={item.stock <= item.minThreshold ? "text-yellow-600 font-bold" : ""}>
-                    {item.stock}
-                  </span>
-                </td>
-                <td className="px-6 py-4">{item.minThreshold}</td>
-                <td className="px-6 py-4 space-x-2">
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => products.deleteProduct(parseInt(item.id))}
-                    className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {menuSync.menuItems.map((item) => {
+              const firstSize = item.sizes?.[0]
+              const displaySize = firstSize?.size || "—"
+              const displayPrice = firstSize?.price || 0
+              return (
+                <tr key={item.id} className="hover:bg-accent/50">
+                  <td className="px-6 py-4">{item.name}</td>
+                  <td className="px-6 py-4">{item.category}</td>
+                  <td className="px-6 py-4">{displaySize}</td>
+                  <td className="px-6 py-4">₱{displayPrice}</td>
+                  <td className="px-6 py-4">
+                    <span className={item.stock <= item.minThreshold ? "text-yellow-600 font-bold" : ""}>
+                      {item.stock}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">{item.minThreshold}</td>
+                  <td className="px-6 py-4 space-x-2">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => products.deleteProduct(parseInt(item.id))}
+                      className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

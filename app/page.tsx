@@ -9,14 +9,17 @@ import InventoryPanel from "@/components/inventory-panel"
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userRole, setUserRole] = useState<"cashier" | "manager" | "inventory">("cashier")
+  const [currentUser, setCurrentUser] = useState<any>(null)
 
-  const handleLogin = (role: "cashier" | "manager" | "inventory") => {
-    setUserRole(role)
+  const handleLogin = (role: "cashier" | "manager" | "inventory" | string, user: any) => {
+    setUserRole(role as "cashier" | "manager" | "inventory")
+    setCurrentUser(user)
     setIsLoggedIn(true)
   }
 
   const handleLogout = () => {
     setIsLoggedIn(false)
+    setCurrentUser(null)
   }
 
   if (!isLoggedIn) {
@@ -25,9 +28,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {userRole === "cashier" && <CashierPanel onLogout={handleLogout} />}
-      {userRole === "manager" && <ManagerDashboard onLogout={handleLogout} />}
-      {userRole === "inventory" && <InventoryPanel onLogout={handleLogout} />}
+      {userRole === "cashier" && <CashierPanel onLogout={handleLogout} currentUser={currentUser} />}
+      {userRole === "manager" && <ManagerDashboard onLogout={handleLogout} currentUser={currentUser} />}
+      {userRole === "inventory" && <InventoryPanel onLogout={handleLogout} currentUser={currentUser} />}
     </div>
   )
 }

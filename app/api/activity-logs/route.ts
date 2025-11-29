@@ -3,12 +3,12 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   try {
-    const logs = await sql(
-      `SELECT al.*, u.name as user_name 
-       FROM activity_logs al 
-       LEFT JOIN users u ON al.user_id = u.id 
-       ORDER BY al.created_at DESC LIMIT 200`,
-    )
+    const logs = await sql`
+      SELECT al.*, u.name as user_name 
+      FROM activity_logs al 
+      LEFT JOIN users u ON al.user_id = u.id 
+      ORDER BY al.created_at DESC LIMIT 200
+    `
 
     return NextResponse.json(logs)
   } catch (error) {
@@ -21,11 +21,10 @@ export async function POST(request: NextRequest) {
   try {
     const { user_id, action, action_type, entity_type, entity_id, details } = await request.json()
 
-    const result = await sql(
-      `INSERT INTO activity_logs (user_id, action, action_type, entity_type, entity_id, details) 
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [user_id, action, action_type, entity_type, entity_id, JSON.stringify(details)],
-    )
+    const result = await sql`
+      INSERT INTO activity_logs (user_id, action, action_type, entity_type, entity_id, details) 
+      VALUES (${user_id}, ${action}, ${action_type}, ${entity_type}, ${entity_id}, ${JSON.stringify(details)}) RETURNING *
+    `
 
     return NextResponse.json(result[0], { status: 201 })
   } catch (error) {
