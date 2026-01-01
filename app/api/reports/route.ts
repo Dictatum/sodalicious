@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     // Totals
     const totalsQuery = `
       SELECT COUNT(*) AS totalOrders, COALESCE(SUM(total_amount), 0) AS totalSales
-      FROM orders
+      FROM orders o
       WHERE ${whereClause}
     `
     const totalsRes: any = await (sql as any)([totalsQuery] as any)

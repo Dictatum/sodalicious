@@ -18,6 +18,13 @@ export default function Home() {
   }
 
   const handleLogout = () => {
+    if (currentUser?.id) {
+      fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: currentUser.id })
+      }).catch(console.error)
+    }
     setIsLoggedIn(false)
     setCurrentUser(null)
   }

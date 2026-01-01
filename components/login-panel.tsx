@@ -51,10 +51,9 @@ export default function LoginPanel({ onLogin }: LoginPanelProps) {
       const roleMap: Record<string, string> = {
         cashier: "cashier",
         manager: "manager",
-        inventory_officer: "inventory",
       }
 
-      onLogin(roleMap[data.user.role] || data.user.role, data.user)
+      onLogin(roleMap[data.user.role] || "cashier", data.user)
       setEmail("")
       setPassword("")
     } catch (err) {
@@ -111,7 +110,6 @@ export default function LoginPanel({ onLogin }: LoginPanelProps) {
           <div className="text-xs text-muted-foreground space-y-1">
             <p className="font-semibold">Cashier: cashier@sodalicious.com / 123456</p>
             <p className="font-semibold">Manager: manager@sodalicious.com / 123456</p>
-            <p className="font-semibold">Inventory: inventory@sodalicious.com / 123456</p>
           </div>
         </div>
       </div>

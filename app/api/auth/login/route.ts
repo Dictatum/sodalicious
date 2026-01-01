@@ -21,6 +21,13 @@ export async function POST(request: NextRequest) {
         const user = result[0]
         // Simple password check (use demo password or demo fallback)
         if (password === "123456") {
+          // Log login activity
+          try {
+            await sql`INSERT INTO activity_logs (user_id, action, action_type, entity_type, entity_id, details) VALUES (${user.id}, 'Logged in', 'login', 'User', ${user.id}, 'User logged into the system')`
+          } catch (e) {
+            console.error("Failed to log login activity", e)
+          }
+
           return NextResponse.json({
             success: true,
             user,
@@ -37,18 +44,12 @@ export async function POST(request: NextRequest) {
     const demoUsers = [
       { id: 1, email: "cashier@sodalicious.com", name: "Cashier", role: "cashier", is_active: true },
       { id: 2, email: "manager@sodalicious.com", name: "Manager", role: "manager", is_active: true },
-      {
-        id: 3,
-        email: "inventory@sodalicious.com",
-        name: "Inventory Officer",
-        role: "inventory_officer",
-        is_active: true,
-      },
     ]
 
     const demoUser = demoUsers.find((u) => u.email === email)
 
     if (demoUser && password === "123456") {
+      // Log demo login activity if possible (skip db log for demo/fallback user if they don't exist in DB)
       return NextResponse.json({
         success: true,
         user: demoUser,

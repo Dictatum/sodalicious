@@ -15,12 +15,13 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
   const [cart, setCart] = useState<CartItem[]>([])
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [searchTerm, setSearchTerm] = useState("")
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "gcash" | "card" | "e-wallet">("cash")
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "gcash" | "card">("cash")
   const [customerName, setCustomerName] = useState("")
   const [showReceipt, setShowReceipt] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [lastOrder, setLastOrder] = useState<any>(null)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
-  
+
   // Size selection modal state
   const [showSizeModal, setShowSizeModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState<any>(null)
@@ -39,7 +40,7 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
     if (selectedItem) {
       const cartItemId = `${selectedItem.id}-${size.size}`
       const existing = cart.find((c) => c.id === cartItemId)
-      
+
       if (existing) {
         setCart(cart.map((c) =>
           c.id === cartItemId ? { ...c, quantity: c.quantity + 1 } : c
@@ -78,10 +79,21 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
   const tax = subtotal * 0.08
   const total = subtotal + tax
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
+    if (cart.length === 0) return
+    if (paymentMethod === "gcash" || paymentMethod === "card") {
+      setShowPaymentModal(true)
+    } else {
+      processOrder()
+    }
+  }
+
+  const processOrder = async () => {
     if (cart.length === 0) return
 
     setCheckoutLoading(true)
+    setShowPaymentModal(false)
+
     try {
       const orderData = {
         cashier_id: currentUser?.id || 1,
@@ -122,7 +134,6 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
       setShowReceipt(true)
       setCart([])
       setCustomerName("")
-      setTimeout(() => setShowReceipt(false), 10000)
     } catch (err) {
       console.error("[POS] Checkout error:", err)
       alert("Failed to complete order. Please try again.")
@@ -133,53 +144,108 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
 
   if (showReceipt && lastOrder) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-8 text-center shadow-xl">
-          <h2 className="text-3xl font-bold mb-4 text-foreground">Order Successful!</h2>
-          <div className="bg-green-100 text-green-700 p-4 rounded-xl mb-6 border border-green-200">
-            <p className="font-bold text-lg">✓ Payment Received</p>
-            <p className="text-sm mt-2 font-medium">{paymentMethod.toUpperCase()}</p>
-          </div>
+      <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-8 text-center shadow-xl animate-in fade-in zoom-in duration-300">
+          <div className="text-primary mb-4 text-4xl">✓</div>
+          <h2 className="text-3xl font-bold mb-2 text-foreground">Order Completed!</h2>
+          <p className="text-muted-foreground mb-6">Thank you for your purchase.</p>
 
-          <div className="text-left bg-muted p-6 rounded-xl mb-6">
-            <p className="font-bold text-center mb-4 text-foreground">RECEIPT</p>
-            <p className="text-sm mb-4 border-b border-border pb-4 text-foreground">
-              Customer: <span className="font-bold">{lastOrder.customer_name || customerName}</span>
-              <br />
-              Time: <span className="font-bold">{new Date().toLocaleTimeString()}</span>
-            </p>
-            <div className="space-y-1 text-sm border-b border-border pb-4 mb-4 text-foreground">
+          <div id="receipt-content" className="text-left bg-white text-black p-6 rounded-xl mb-6 shadow-inner font-mono text-sm">
+            <div className="text-center border-b border-black/10 pb-4 mb-4">
+              <h3 className="text-xl font-bold uppercase tracking-wider">Sodalicious.Co</h3>
+              <p className="text-xs text-gray-500">Premium POS Terminal</p>
+            </div>
+
+            <div className="mb-4 text-xs space-y-1 text-gray-600">
+              <div className="flex justify-between">
+                <span>Order No:</span>
+                <span className="font-bold">{lastOrder.order_number}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Date:</span>
+                <span>{new Date().toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Time:</span>
+                <span>{new Date().toLocaleTimeString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Cashier:</span>
+                <span>{currentUser.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Customer:</span>
+                <span>{lastOrder.customer_name || "Walk-in"}</span>
+              </div>
+            </div>
+
+            <div className="border-t border-b border-black/10 py-4 mb-4 space-y-2">
               {lastOrder.items?.map((item: CartItem) => (
                 <div key={item.id} className="flex justify-between">
-                  <span>
-                    {item.quantity}x {item.name} ({item.size})
-                  </span>
+                  <span>{item.quantity}x {item.name} ({item.size})</span>
                   <span className="font-semibold">₱{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
-            <div className="space-y-1 text-sm font-bold text-foreground">
+
+            <div className="space-y-1 text-xs">
               <div className="flex justify-between">
-                <span>Subtotal:</span>
+                <span>Subtotal</span>
                 <span>₱{lastOrder.subtotal?.toFixed(2) || "0.00"}</span>
               </div>
               <div className="flex justify-between">
-                <span>Tax:</span>
+                <span>Tax (8%)</span>
                 <span>₱{lastOrder.tax?.toFixed(2) || "0.00"}</span>
               </div>
-              <div className="flex justify-between text-lg border-t border-border pt-2">
-                <span>Total:</span>
-                <span className="text-primary">₱{lastOrder.total?.toFixed(2) || lastOrder.total_amount?.toFixed(2) || "0.00"}</span>
+              <div className="flex justify-between border-t border-black/10 pt-2 mt-2 text-base font-bold">
+                <span>TOTAL</span>
+                <span>₱{lastOrder.total?.toFixed(2) || lastOrder.total_amount?.toFixed(2) || "0.00"}</span>
               </div>
+              <div className="flex justify-between text-xs pt-1 text-gray-500">
+                <span>Payment ({paymentMethod.toUpperCase()})</span>
+                <span>₱{lastOrder.total?.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="mt-6 text-center text-xs text-gray-400">
+              <p>Thank you for drinking Sodalicious!</p>
+              <p>Please come again.</p>
             </div>
           </div>
 
-          <button
-            onClick={() => setShowReceipt(false)}
-            className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-all"
-          >
-            New Order
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                const printContent = document.getElementById("receipt-content")?.innerHTML
+                const originalContent = document.body.innerHTML
+                if (printContent) {
+                  document.title = `Receipt-${lastOrder.order_number}`
+                  window.print()
+                  // In a real app we might use a hidden iframe or specific print CSS
+                  // For this demo, basic window.print() is triggered which prints the whole page usually, 
+                  // but we can rely on user selecting "Selection" or just accept it's a demo.
+                  // A better way for simple React print:
+                  const printWindow = window.open('', '', 'height=600,width=400')
+                  if (printWindow) {
+                    printWindow.document.write('<html><head><title>Receipt</title><style>body{font-family:monospace; padding: 20px;}</style></head><body>')
+                    printWindow.document.write(printContent)
+                    printWindow.document.write('</body></html>')
+                    printWindow.document.close()
+                    printWindow.print()
+                  }
+                }
+              }}
+              className="flex-1 py-3 bg-muted text-foreground border border-border rounded-lg font-bold hover:bg-muted/80 transition-all flex items-center justify-center gap-2"
+            >
+              <span>🖨️ Print Receipt</span>
+            </button>
+            <button
+              onClick={() => setShowReceipt(false)}
+              className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-all"
+            >
+              Close & New Order
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -215,11 +281,10 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-lg whitespace-nowrap font-semibold transition-all ${
-                    selectedCategory === cat
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "bg-muted text-foreground hover:bg-muted/80 border border-border"
-                  }`}
+                  className={`px-4 py-2 rounded-lg whitespace-nowrap font-semibold transition-all ${selectedCategory === cat
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "bg-muted text-foreground hover:bg-muted/80 border border-border"
+                    }`}
                 >
                   <span className="mr-2">{menuSync.getCategoryEmoji(cat)}</span>
                   {cat}
@@ -246,11 +311,10 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
                   {item.sizes.length} size{item.sizes.length !== 1 ? "s" : ""}
                 </p>
                 <p
-                  className={`text-xs font-semibold px-2 py-1 rounded-lg mt-2 ${
-                    item.stock <= item.minThreshold
-                      ? "bg-red-100 text-red-700"
-                      : "bg-muted text-muted-foreground"
-                  }`}
+                  className={`text-xs font-semibold px-2 py-1 rounded-lg mt-2 ${item.stock <= item.minThreshold
+                    ? "bg-red-100 text-red-700"
+                    : "bg-muted text-muted-foreground"
+                    }`}
                 >
                   {item.stock} left
                 </p>
@@ -331,16 +395,36 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
               </div>
             </div>
 
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value as any)}
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="cash">Cash</option>
-              <option value="gcash">GCash</option>
-              <option value="card">Card</option>
-              <option value="e-wallet">E-Wallet</option>
-            </select>
+
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              <button
+                onClick={() => setPaymentMethod("cash")}
+                className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${paymentMethod === "cash"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background text-foreground border-border hover:bg-muted"
+                  }`}
+              >
+                💵 Cash
+              </button>
+              <button
+                onClick={() => setPaymentMethod("gcash")}
+                className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${paymentMethod === "gcash"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-background text-foreground border-border hover:bg-muted"
+                  }`}
+              >
+                📱 GCash
+              </button>
+              <button
+                onClick={() => setPaymentMethod("card")}
+                className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${paymentMethod === "card"
+                    ? "bg-purple-600 text-white border-purple-600"
+                    : "bg-background text-foreground border-border hover:bg-muted"
+                  }`}
+              >
+                💳 Card
+              </button>
+            </div>
 
             <button
               onClick={handleCheckout}
@@ -382,6 +466,80 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Processing Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-foreground">
+                {paymentMethod === "gcash" ? "GCash Payment" : "Card Payment"}
+              </h3>
+              <p className="text-muted-foreground">Total to Pay: <span className="font-bold text-primary">₱{total.toFixed(2)}</span></p>
+            </div>
+
+            {paymentMethod === "gcash" && (
+              <div className="space-y-4">
+                <div className="bg-white p-4 rounded-xl flex items-center justify-center border border-gray-200">
+                  {/* Dummy QR Code */}
+                  <div className="w-48 h-48 bg-gray-900 flex items-center justify-center text-white text-xs text-center p-2">
+                    [Promotional QR Code Placeholder]
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground">Reference Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 1234 5678 9012"
+                    className="w-full px-4 py-2 border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary outline-none"
+                    autoFocus
+                  />
+                </div>
+              </div>
+            )}
+
+            {paymentMethod === "card" && (
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-xl text-white shadow-lg">
+                  <div className="flex justify-between mb-8">
+                    <div className="w-12 h-8 bg-yellow-400 rounded-md opacity-80"></div>
+                    <span className="font-mono">CREDIT</span>
+                  </div>
+                  <div className="font-mono text-xl tracking-widest mb-4">•••• •••• •••• ••••</div>
+                  <div className="flex justify-between text-xs opacity-80">
+                    <span>CARD HOLDER</span>
+                    <span>EXPIRES</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground">Card Number</label>
+                  <input
+                    type="text"
+                    placeholder="xxxx xxxx xxxx xxxx"
+                    className="w-full px-4 py-3 border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary outline-none font-mono"
+                    autoFocus
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="flex-1 py-3 bg-muted text-foreground border border-border rounded-lg font-bold hover:bg-muted/80 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={processOrder}
+                className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-all shadow-lg"
+              >
+                {paymentMethod === "gcash" ? "Confirm Payment" : "Process Card"}
+              </button>
+            </div>
           </div>
         </div>
       )}

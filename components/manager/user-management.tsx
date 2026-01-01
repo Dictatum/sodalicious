@@ -110,7 +110,7 @@ export default function UserManagement({ users }: UserManagementProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {users.users.map((user) => (
+            {users.users.filter(u => u.role !== 'manager').map((user) => (
               <tr key={user.id} className="hover:bg-accent/50">
                 <td className="px-6 py-4">{user.name}</td>
                 <td className="px-6 py-4">{user.username}</td>

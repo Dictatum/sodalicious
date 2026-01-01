@@ -91,12 +91,24 @@ export interface OrderItem {
 
 export interface InventoryLog {
   id: number
-  product_id: number
+  ingredient_id: number
+  ingredient_name?: string
   user_id: number
+  user_name?: string
   log_type: string
   quantity_changed: number
   reason: string
   previous_quantity: number
   new_quantity: number
   created_at: string
+}
+
+export interface Ingredient {
+  id: number
+  name: string
+  unit: string
+  stock_quantity: number
+  reorder_level: number
+  cost_per_unit: number
+  updated_at: string
 }

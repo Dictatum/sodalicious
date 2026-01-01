@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+import { useProducts, useInventoryLogs, useMenuSync, useIngredients } from "@/lib/hooks"
 import { updateProductStock } from "@/lib/menu-data"
 
 interface InventoryPanelProps {
@@ -30,11 +30,10 @@ export default function InventoryPanel({ onLogout, currentUser }: InventoryPanel
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`w-full text-left px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-3 ${
-                activeTab === tab.id
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent"
-              }`}
+              className={`w-full text-left px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-3 ${activeTab === tab.id
+                ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                : "text-sidebar-foreground hover:bg-sidebar-accent"
+                }`}
             >
               <span className="text-lg">{tab.icon}</span>
               {tab.label}
@@ -63,20 +62,17 @@ function InventoryView({
   inventoryLogs,
   currentUser,
 }: { menuSync: ReturnType<typeof useMenuSync>; inventoryLogs: ReturnType<typeof useInventoryLogs>; currentUser?: any }) {
-  const [adjustingId, setAdjustingId] = useState<string | null>(null)
+  const { ingredients, refetch } = useIngredients()
+  const [adjustingId, setAdjustingId] = useState<number | null>(null)
   const [adjustmentData, setAdjustmentData] = useState({ quantity: 0, type: "restock", reason: "" })
 
-  const lowStockItems = menuSync.getLowStockItems()
+  const lowStockItems = ingredients.filter((item) => item.stock_quantity <= item.reorder_level)
 
   const handleAdjustment = async () => {
     if (adjustingId) {
-      const item = menuSync.getMenuItemById(adjustingId)
+      const item = ingredients.find((i) => i.id === adjustingId)
       if (item) {
         const change = adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity
-        const newStock = (item.stock || 0) + change
-
-        // Update in-memory menu immediately
-        updateProductStock(item.id, newStock)
 
         // Call API to update SQL and log the inventory change
         try {
@@ -84,7 +80,7 @@ function InventoryView({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              product_id: item.name, // Send product name as fallback for database lookup
+              ingredient_id: item.id,
               user_id: currentUser?.id || 1,
               log_type: adjustmentData.type,
               quantity_changed: change,
@@ -94,26 +90,14 @@ function InventoryView({
 
           if (response.ok) {
             console.log("[Inventory] API sync successful")
-            // Update inventory log
-            inventoryLogs.addLog({
-              productId: parseInt(adjustingId),
-              productName: item.name,
-              type: adjustmentData.type as any,
-              quantity: adjustmentData.quantity,
-              reason: adjustmentData.reason,
-              timestamp: new Date().toLocaleString(),
-              userId: currentUser?.id || 1,
-              userName: currentUser?.name || "Inventory Officer",
-            })
+            refetch()
+            inventoryLogs.refetch()
           } else {
             console.error("[Inventory] API sync failed:", await response.text())
           }
         } catch (e) {
           console.error("[Inventory] API error:", e)
         }
-
-        // Dispatch update event so manager and cashier panels refresh
-        if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("menu:update"))
 
         setAdjustingId(null)
         setAdjustmentData({ quantity: 0, type: "restock", reason: "" })
@@ -123,15 +107,15 @@ function InventoryView({
 
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold mb-8 text-foreground">Stock Management</h2>
+      <h2 className="text-3xl font-bold mb-8 text-foreground">Ingredient Stock Management</h2>
 
       {lowStockItems.length > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5 mb-8">
-          <p className="text-sm font-bold text-yellow-800">⚠ Low Stock Items: {lowStockItems.length}</p>
+          <p className="text-sm font-bold text-yellow-800">⚠ Low Stock Ingredients: {lowStockItems.length}</p>
           <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
             {lowStockItems.map((item) => (
               <p key={item.id} className="text-sm text-yellow-700 font-medium">
-                {item.name} ({item.stock}/{item.minThreshold})
+                {item.name} ({item.stock_quantity} {item.unit})
               </p>
             ))}
           </div>
@@ -186,30 +170,29 @@ function InventoryView({
         <table className="w-full">
           <thead className="bg-primary/5 border-b border-border">
             <tr>
-              <th className="px-6 py-4 text-left font-bold text-foreground">Product</th>
-              <th className="px-6 py-4 text-left font-bold text-foreground">Current Stock</th>
-              <th className="px-6 py-4 text-left font-bold text-foreground">Min Threshold</th>
-              <th className="px-6 py-4 text-left font-bold text-foreground">Category</th>
+              <th className="px-6 py-4 text-left font-bold text-foreground">Ingredient</th>
+              <th className="px-6 py-4 text-left font-bold text-foreground">Unit</th>
+              <th className="px-6 py-4 text-left font-bold text-foreground">Stock</th>
+              <th className="px-6 py-4 text-left font-bold text-foreground">Reorder Level</th>
               <th className="px-6 py-4 text-left font-bold text-foreground">Status</th>
               <th className="px-6 py-4 text-left font-bold text-foreground">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {menuSync.menuItems.map((item) => (
+            {ingredients.map((item) => (
               <tr key={item.id} className="hover:bg-primary/5 transition-colors">
                 <td className="px-6 py-4 font-medium text-foreground">{item.name}</td>
-                <td className="px-6 py-4 text-foreground">{item.stock}</td>
-                <td className="px-6 py-4 text-foreground">{item.minThreshold}</td>
-                <td className="px-6 py-4 text-foreground">{item.category}</td>
+                <td className="px-6 py-4 text-foreground">{item.unit}</td>
+                <td className="px-6 py-4 text-foreground">{item.stock_quantity}</td>
+                <td className="px-6 py-4 text-foreground">{item.reorder_level}</td>
                 <td className="px-6 py-4">
                   <span
-                    className={`px-3 py-1 rounded-lg text-sm font-bold ${
-                      item.stock <= item.minThreshold
-                        ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
-                        : "bg-green-100 text-green-700 border border-green-200"
-                    }`}
+                    className={`px-3 py-1 rounded-lg text-sm font-bold ${item.stock_quantity <= item.reorder_level
+                      ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                      : "bg-green-100 text-green-700 border border-green-200"
+                      }`}
                   >
-                    {item.stock <= item.minThreshold ? "Low" : "OK"}
+                    {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -246,14 +229,16 @@ function StockHistoryView({ inventoryLogs }: { inventoryLogs: ReturnType<typeof 
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {inventoryLogs.logs.map((log) => (
+            {inventoryLogs.logs.map((log: any) => (
               <tr key={log.id} className="hover:bg-primary/5 transition-colors">
-                <td className="px-6 py-4 text-foreground">{log.productName}</td>
-                <td className="px-6 py-4 capitalize font-semibold text-foreground">{log.type}</td>
-                <td className="px-6 py-4 font-bold text-foreground">{log.quantity}</td>
+                <td className="px-6 py-4 text-foreground">{log.ingredient_name || log.productName || "Unknown"}</td>
+                <td className="px-6 py-4 capitalize font-semibold text-foreground">{log.log_type || log.type}</td>
+                <td className="px-6 py-4 font-bold text-foreground">{log.quantity_changed || log.quantity}</td>
                 <td className="px-6 py-4 text-foreground">{log.reason || "-"}</td>
-                <td className="px-6 py-4 text-foreground">{log.userName}</td>
-                <td className="px-6 py-4 text-muted-foreground text-sm">{log.timestamp}</td>
+                <td className="px-6 py-4 text-foreground">{log.user_name || log.userName}</td>
+                <td className="px-6 py-4 text-muted-foreground text-sm">
+                  {log.created_at ? new Date(log.created_at).toLocaleString() : log.timestamp}
+                </td>
               </tr>
             ))}
           </tbody>

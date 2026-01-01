@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     try {
       // First, ensure we have a valid cashier_id by fetching from database
       let validCashierId = cashier_id
-      
+
       // Always validate the cashier exists in database
       let cashierExists = false
       if (validCashierId) {
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         `
         cashierExists = cashierCheck.length > 0
       }
-      
+
       if (!cashierExists) {
         // Get first cashier from database
         const cashiers = await sql`
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       // Insert order into database
       const orderResult = await sql`
         INSERT INTO orders (order_number, cashier_id, customer_name, total_amount, payment_method, order_status) 
-        VALUES (${orderNumber}, ${validCashierId}, ${customer_name}, ${total_amount}, ${payment_method}, 'pending')
+        VALUES (${orderNumber}, ${validCashierId}, ${customer_name}, ${total_amount}, ${payment_method}, 'completed')
       `
 
       // For MySQL, we need to fetch the inserted record separately
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
 
           // If we found the product, use its numeric ID for order_items
           let dbProductId = dbProduct?.id
-          
+
           // If product ID couldn't be resolved, skip order_items insertion to avoid constraint violation
           if (!dbProductId) {
             console.warn(`[DB] Could not map product ID for item: ${baseName} / ${item.product_id}. Skipping order_items insertion.`)
@@ -131,36 +131,31 @@ export async function POST(request: NextRequest) {
             VALUES (${orderId}, ${dbProductId}, ${item.quantity}, ${item.price}, ${item.subtotal})
           `
 
-          if (dbProduct) {
-            const newDbStock = dbProduct.stock_quantity - item.quantity
-            await sql`UPDATE products SET stock_quantity = ${newDbStock} WHERE id = ${dbProduct.id}`
-            // sync server in-memory menu-data to reflect DB change (best-effort)
-            try {
-              setStockByName(dbProduct.name, newDbStock)
-            } catch (e) {
-              console.warn("[Orders] Failed to sync in-memory menu-data after DB update", e)
-            }
-
-            console.log(`[DB] Updated stock for product ${dbProduct.id} (${dbProduct.name}): -${item.quantity} units`)
-          } else {
-            // No DB mapping found; still log and continue
-            console.warn(`[DB] Could not find DB product to update for order item: ${item.product_id} / ${baseName}`)
-          }
+          // Stock deduction is now handled by the trg_deduct_ingredients trigger on order_items insert
+          console.log(`[DB] Inserted order item for product ${dbProductId}`)
         } catch (err) {
-          console.error("[DB] Error updating product stock for order item", err)
+          console.error("[DB] Error inserting order item", err)
         }
       }
 
-      console.log(`[Order] ✓ Order ${orderNumber} created successfully and database updated`)
+      console.log(`[Order] ✓ Order ${orderNumber} created successfully`)
+
+      // Log activity
+      try {
+        await sql`INSERT INTO activity_logs (user_id, action, action_type, entity_type, entity_id, details) 
+                   VALUES (${validCashierId}, ${`New order ${orderNumber}`}, 'order_created', 'Order', ${orderId}, ${JSON.stringify({ total: total_amount, method: payment_method })})`
+      } catch (e) {
+        console.error("Failed to log order activity", e)
+      }
 
       return NextResponse.json(
         {
-          id: orderResult[0].id,
+          id: orderResult[0]?.id || orderId,
           order_number: orderNumber,
           customer_name,
           total_amount,
           payment_method,
-          order_status: "pending",
+          order_status: "completed",
           created_at: new Date().toISOString(),
         },
         { status: 201 }

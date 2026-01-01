@@ -1,14 +1,1317 @@
-[00:00:02.565] Server  LOG      ✓ Ready in 1893ms
-[00:00:05.580] Server  LOG      ○ Compiling / ...
-[00:00:06.258] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:06.546] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:00:06.546] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
-[00:00:06.546] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764448402032}
-[00:02:33.204] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
-[00:02:33.265] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
-[00:02:33.370] Browser ERROR   [Reports] fetch error {}
-[00:02:33.370] Browser ERROR   [Reports] fetch error {}
-[00:02:38.471] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
-[00:02:38.563] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
-[00:02:38.666] Browser ERROR   [Reports] fetch error {}
-[00:02:38.666] Browser ERROR   [Reports] fetch error {}
+[00:00:03.453] Server  LOG      ✓ Ready in 2.4s
+[00:00:21.675] Server  LOG      ○ Compiling / ...
+[00:00:26.742] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:27.425] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:27.425] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:00:27.425] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1767292726864}
+[00:02:40.228] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:02:40.447] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:02:40.454] Browser ERROR   [Reports] fetch error {}
+[00:02:40.553] Browser ERROR   [Reports] fetch error {}
+[00:02:43.825] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:02:43.969] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:02:43.974] Browser ERROR   [Reports] fetch error {}
+[00:02:44.076] Browser ERROR   [Reports] fetch error {}
+[00:02:45.732] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:02:45.838] Browser ERROR   [Reports] fetch error {}
+[00:02:47.460] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:02:47.576] Browser ERROR   [Reports] fetch error {}
+[00:04:44.925] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:04:45.066] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:04:45.071] Browser ERROR   [Reports] fetch error {}
+[00:04:45.175] Browser ERROR   [Reports] fetch error {}
+[00:04:50.657] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:04:51.476] Browser ERROR   [Reports] fetch error {}
+[00:04:55.610] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:04:56.476] Browser ERROR   [Reports] fetch error {}
+[00:05:00.628] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:05:01.476] Browser ERROR   [Reports] fetch error {}
+[00:05:05.581] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:05:06.475] Browser ERROR   [Reports] fetch error {}
+[00:05:10.599] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:05:11.476] Browser ERROR   [Reports] fetch error {}
+[00:05:15.731] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:05:16.476] Browser ERROR   [Reports] fetch error {}
+[00:05:20.791] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:05:21.478] Browser ERROR   [Reports] fetch error {}
+[00:05:25.761] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:05:26.476] Browser ERROR   [Reports] fetch error {}
+[00:05:29.805] Server  ERROR   [reports] GET error: Error: Unknown column 'o.created_at' in 'where clause'
+[00:05:29.910] Browser ERROR   [Reports] fetch error {}
+[00:08:13.468] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:08:13.865] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="/sodalicio...">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="en"
+-                         data-jetski-tab-id="2114404505"
+                        >
+                  ...
+
+[00:08:14.750] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:08:14.751] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:08:14.751] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1767293194106}
+[00:09:32.038] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:09:33.903] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:09:52.719] Server  LOG      ✓ Compiled in 3.7s
+[00:09:54.400] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:09:55.475] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:09:56.689] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:09:57.475] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:09:58.610] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:09:59.475] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:10:00.621] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:10:01.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:10:02.877] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:10:03.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:10:03.996] Server  LOG      ✓ Compiled in 3s
+[00:10:05.201] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:10:05.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:10:06.625] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:10:07.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:10:23.676] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:10:24.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:26.947] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:29.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:38.357] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:38.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:38.699] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:39.483] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:43.951] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:44.421] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:44.553] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:45.486] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:45.704] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:46.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:46.728] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:47.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:50.011] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:50.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:50.642] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:51.491] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:51.588] Server  LOG      ✓ Compiled in 7.4s
+[00:11:53.144] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:53.481] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:54.904] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:55.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:56.804] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:57.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:11:58.727] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:11:59.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:00.703] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:01.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:02.917] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:04.053] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:04.711] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:06.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:07.078] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:11.585] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:11.609] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:11.849] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:12.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:12.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:12.669] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:13.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:14.665] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:15.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:23.294] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:23.760] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:23.774] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:24.023] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:24.357] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:24.604] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:24.618] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:24.618] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:24.618] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:25.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:26.658] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:27.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:28.636] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:29.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:30.764] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:31.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:32.828] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:33.477] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:34.778] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:35.478] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:36.654] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:12:37.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:12:49.874] Server  LOG      ✓ Compiled in 2.9s
+[00:13:23.995] Server  ERROR   [v0] Inventory GET error: Error: Table 'sodalicious_db.ingredients' doesn't exist
+[00:13:25.476] Browser ERROR   [Inventory] Error fetching logs: {}
+[00:15:36.116] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:15:36.476] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:15:36.477] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:15:36.477] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1767293635807}
+[00:18:32.522] Server  ERROR   [Inventory] POST error: Error: Unknown column 'previous_quantity' in 'field list'
+[00:18:32.676] Browser ERROR   [Inventory] API sync failed: {"error":"Failed to log inventory change"}
+[00:20:44.749] Server  LOG      ✓ Compiled in 5s
+[00:21:30.030] Server  LOG      ✓ Compiled in 5s
+[00:21:33.491] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:21:33.491] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:21:54.345] Server  ERROR    ⨯ ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+
+
+
+./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+
+
+[00:21:55.483] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:21:55.483] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:21:57.504] Server  LOG      ○ Compiling /_error ...
+[00:22:03.480] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:03.483] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:04.486] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:04.486] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:10.265] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:10.265] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:11.471] Browser ERROR   uncaughtError: Error: ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+
+
+[00:22:11.773] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:11.773] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:12.072] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:12.072] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:12.480] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:12.480] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:26.284] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:26.287] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:26.476] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:22:26.476] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:23:11.499] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:23:11.503] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:23:17.053] Server  LOG      ✓ Compiled in 4.4s
+[00:23:17.482] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:23:17.487] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:23:24.477] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:13:1
+Ecmascript file had an error
+  11 | }
+  12 |
+> 13 | "use client"
+     | ^^^^^^^^^^^^
+  14 |
+  15 | import { useState } from "react"
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:23:24.477] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:15:10
+Ecmascript file had an error
+  13 | "use client"
+  14 |
+> 15 | import { useState } from "react"
+     |          ^^^^^^^^
+  16 | import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
+  17 | import { useIngredients } from "@/lib/hooks"
+  18 |
+
+the name `useState` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:23:38.289] Server  LOG      ✓ Compiled in 711ms
+[00:24:32.186] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:24:32.374] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:24:32.374] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:24:32.374] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1767294171814}
+[00:31:15.266] Server  LOG     [Stock] Deducted 1 units of IC004 from memory. Remaining: 39
+[00:31:15.288] Server  LOG     [DB] Order ORD-1767294574804 created with ID: 1
+[00:31:15.515] Server  ERROR   [DB] Error updating product stock for order item Error: Unknown column 'stock_quantity' in 'field list'
+[00:31:15.516] Server  LOG     [Order] ✓ Order ORD-1767294574804 created successfully and database updated
+[00:31:15.648] Server  ERROR   [DB Error] TypeError: Cannot read properties of undefined (reading 'id')
+[00:31:24.554] Server  LOG      ✓ Compiled in 586ms
+[00:31:25.564] Server  LOG      ✓ Compiled in 122ms
+[00:31:50.324] Server  LOG      ✓ Compiled in 123ms
+[00:32:18.211] Server  LOG      ✓ Compiled in 141ms
+[00:32:18.490] Browser ERROR   uncaughtError: ReferenceError: useActivityLogs is not defined
+[00:32:28.598] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:32:28.609] Server  LOG      ✓ Compiled in 3.1s
+[00:32:30.631] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1767294648218}
+[00:32:31.163] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:32:31.478] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:32:31.478] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:32:31.478] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1767294650828}
+[00:33:43.319] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:33:43.560] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:33:47.401] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:33:52.571] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:33:57.387] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:02.575] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:07.539] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:12.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:17.384] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:19.941] Server  LOG      ✓ Compiled in 529ms
+[00:34:22.546] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:27.561] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:32.550] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:37.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:42.538] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:47.546] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:52.540] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:34:57.533] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:35:02.588] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:35:07.399] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:35:46.238] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:35:46.376] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:35:47.844] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:35:47.942] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:35:52.794] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:36:15.597] Server  LOG      ✓ Compiled in 298ms
+[00:36:55.113] Server  LOG      ✓ Compiled in 114ms
+[00:36:56.786] Server  LOG      ✓ Compiled in 105ms
+[00:36:58.515] Server  LOG      ✓ Compiled in 107ms
+[00:37:28.804] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:37:28.918] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:37:47.272] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:37:47.365] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:37:52.142] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:37:57.136] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:02.145] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:07.163] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:12.155] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:16.730] Server  LOG     [Stock] Deducted 1 units of HC001 from memory. Remaining: 39
+[00:38:16.733] Server  LOG     [Stock] Deducted 1 units of HC001 from memory. Remaining: 38
+[00:38:16.767] Server  LOG     [DB] Order ORD-1767294996271 created with ID: 2
+[00:38:16.911] Server  ERROR   [DB] Error inserting order item Error: Unknown column 'stock_quantity' in 'field list'
+[00:38:17.000] Server  ERROR   [DB] Error inserting order item Error: Unknown column 'stock_quantity' in 'field list'
+[00:38:17.001] Server  LOG     [Order] ✓ Order ORD-1767294996271 created successfully
+[00:38:17.170] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:38.887] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:42.542] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:47.138] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:50.253] Server  LOG     [Stock] Deducted 1 units of HC004 from memory. Remaining: 39
+[00:38:50.260] Server  LOG     [DB] Order ORD-1767295029794 created with ID: 3
+[00:38:50.372] Server  ERROR   [DB] Error inserting order item Error: Unknown column 'stock_quantity' in 'field list'
+[00:38:50.373] Server  LOG     [Order] ✓ Order ORD-1767295029794 created successfully
+[00:38:52.558] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:38:57.547] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:02.535] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:07.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:12.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:17.536] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:22.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:27.147] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:32.587] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:37.571] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:42.545] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:47.152] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:56.773] Server  LOG      ✓ Compiled in 385ms
+[00:39:58.531] Server  LOG      ✓ Compiled in 127ms
+[00:39:59.748] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:39:59.865] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:40:00.773] Server  LOG      ✓ Compiled in 312ms
+[00:40:00.898] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:01.815] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:05.479] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:05.575] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:40:06.477] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:06.477] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:07.476] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:09.475] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:10.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:40:11.476] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:11.476] Browser ERROR   ./sodalicious/components/manager/inventory-management.tsx:144:26
+Parsing ecmascript source code failed
+  142 |                   </span>
+  143 |                     {item.stock_quantity <= item.reorder_level ? "Low" : "OK"}
+> 144 |                   </span>
+      |                          ^
+> 145 |                 </td>
+      | ^^^^^^^^^^^^^^^^^
+  146 |                 <td className="px-6 py-4">
+  147 |                   <button
+  148 |                     onClick={() => {
+
+Expected '</', got 'jsx text (
+                )'
+
+Import traces:
+  Client Component Browser:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component Browser]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Client Component Browser]
+    ./sodalicious/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./sodalicious/components/manager/inventory-management.tsx [Client Component SSR]
+    ./sodalicious/components/manager-dashboard.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Client Component SSR]
+    ./sodalicious/app/page.tsx [Server Component]
+[00:40:15.533] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:40:20.543] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:40:25.564] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:40:29.731] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:40:34.728] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:41:54.609] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:41:54.791] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:41:54.791] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:41:54.791] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1767295214232}
+[00:42:21.598] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:21.669] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:26.536] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:31.535] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:36.547] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:39.594] Server  LOG      ✓ Compiled in 1048ms
+[00:42:41.540] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:46.540] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:51.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:56.539] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:42:57.197] Server  LOG      ✓ Compiled in 175ms
+[00:43:01.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:06.536] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:11.549] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:16.535] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:21.581] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:26.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:31.545] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:36.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:41.634] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:46.551] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:51.538] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:43:56.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:01.531] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:06.553] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:11.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:16.539] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:21.564] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:26.538] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:31.540] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:36.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:39.675] Server  LOG     [Stock] Deducted 1 units of HC001 from memory. Remaining: 37
+[00:44:39.730] Server  LOG     [DB] Order ORD-1767295379216 created with ID: 4
+[00:44:39.869] Server  ERROR   [DB] Error inserting order item Error: Unknown column 'stock_quantity' in 'field list'
+[00:44:39.870] Server  LOG     [Order] ✓ Order ORD-1767295379216 created successfully
+[00:44:42.490] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:46.555] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:51.543] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:56.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:44:57.834] Server  LOG      ✓ Compiled in 292ms
+[00:45:01.533] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:06.527] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:11.529] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:16.538] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:21.531] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:26.582] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:31.539] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:36.530] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:41.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:46.550] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:51.531] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:45:56.545] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:01.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:06.539] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:11.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:16.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:21.538] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:26.541] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:31.531] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:36.542] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:41.551] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:46.541] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:51.545] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:46:56.535] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:01.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:06.536] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:11.535] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:16.535] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:21.536] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:26.544] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:31.531] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:36.536] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:41.531] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:46.533] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:51.544] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:47:56.534] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:01.536] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:05.024] Server  LOG      ✓ Compiled in 288ms
+[00:48:06.542] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:11.538] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:16.535] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:21.551] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:26.576] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:31.566] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:32.181] Server  LOG      ✓ Compiled in 139ms
+[00:48:32.299] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:37.537] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:42.548] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:47.559] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:52.548] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:48:57.545] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function
+[00:49:02.544] Server  ERROR   [v0] Products GET error: TypeError: __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__.sql.query is not a function

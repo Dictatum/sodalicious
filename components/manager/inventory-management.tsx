@@ -1,9 +1,9 @@
+
 "use client"
 
 import { useState } from "react"
 import type { useProducts, useInventoryLogs, useMenuSync } from "@/lib/hooks"
-import { useMenuSync as useMenuSyncHook } from "@/lib/hooks"
-import { updateProductStock } from "@/lib/menu-data"
+import { useIngredients } from "@/lib/hooks"
 
 interface InventoryManagementProps {
   products: ReturnType<typeof useProducts>
@@ -11,71 +11,63 @@ interface InventoryManagementProps {
 }
 
 export default function InventoryManagement({ products, inventoryLogs }: InventoryManagementProps) {
-  const menuSync = useMenuSyncHook()
+  const { ingredients, refetch } = useIngredients()
   const [showAdjustForm, setShowAdjustForm] = useState(false)
-  const [adjustingProductId, setAdjustingProductId] = useState<string | null>(null)
+  const [adjustingId, setAdjustingId] = useState<number | null>(null)
   const [adjustmentData, setAdjustmentData] = useState({ quantity: 0, type: "restock", reason: "" })
 
-  const lowStockItems = menuSync.getLowStockItems()
+  const lowStockItems = ingredients.filter(i => Number(i.stock_quantity) <= Number(i.reorder_level))
 
-  const handleAdjustment = () => {
-    if (adjustingProductId) {
-      const product = products.products.find((p) => p.id === adjustingProductId)
-      if (product) {
-        const newStock =
-          product.stock + (adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity)
-        products.updateProduct(Number(adjustingProductId), { stock: Math.max(0, newStock) })
+  const handleAdjustment = async () => {
+    if (adjustingId) {
+      const item = ingredients.find((i) => i.id === adjustingId)
+      if (item) {
+        const change = adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity
 
-        inventoryLogs.addLog({
-          productId: Number(adjustingProductId),
-          productName: product.name,
-          type: adjustmentData.type as any,
-          quantity: adjustmentData.quantity,
-          reason: adjustmentData.reason,
-          timestamp: new Date().toLocaleString(),
-          userId: 1,
-          userName: "Current User",
-        })
+        try {
+          const response = await fetch("/api/inventory", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ingredient_id: item.id,
+              user_id: 1, // Defaulting to 1 since we don't have user context here easily, typically passed down
+              log_type: adjustmentData.type,
+              quantity_changed: change,
+              reason: adjustmentData.reason,
+            }),
+          })
 
-        // update the global in-memory menu and notify other panels
-        syncMenuUpdate(product, adjustmentData.type === "restock" ? adjustmentData.quantity : -adjustmentData.quantity)
+          if (response.ok) {
+            refetch()
+            inventoryLogs.refetch()
+          } else {
+            console.error("Failed to update inventory")
+          }
+        } catch (e) {
+          console.error(e)
+        }
 
-        setAdjustingProductId(null)
+        setAdjustingId(null)
         setShowAdjustForm(false)
         setAdjustmentData({ quantity: 0, type: "restock", reason: "" })
       }
     }
   }
 
-  // Keep in-memory menu-data in sync and notify other panels
-  const syncMenuUpdate = (prod: any, stockChange: number) => {
-    try {
-      // derive base id (menu-data uses base item ids without size suffix)
-      const baseId = (prod.baseId && prod.baseId.toString()) || prod.id.toString().split("-")[0]
-      // update the global COMPLETE_MENU entry
-      const currentStock = prod.stock || 0
-      const newStock = currentStock + stockChange
-      updateProductStock(baseId, newStock)
-      if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("menu:update"))
-    } catch (e) {
-      console.warn("[menu sync] failed to update in-memory menu:", e)
-    }
-  }
-
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold mb-8">Inventory Management</h2>
+      <h2 className="text-3xl font-bold mb-8">Ingredient Inventory Management</h2>
 
       {lowStockItems.length > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
           <p className="text-sm font-bold text-yellow-800">⚠ Low Stock Alert</p>
-          <p className="text-sm text-yellow-700">{lowStockItems.length} items need restocking</p>
+          <p className="text-sm text-yellow-700">{lowStockItems.length} ingredients need restocking</p>
         </div>
       )}
 
       {showAdjustForm && (
         <div className="bg-card border border-border rounded-lg p-6 mb-8">
-          <h3 className="text-xl font-bold mb-4">Adjust Inventory</h3>
+          <h3 className="text-xl font-bold mb-4">Adjust Stock</h3>
           <div className="grid grid-cols-2 gap-4">
             <select
               value={adjustmentData.type}
@@ -110,7 +102,7 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
             <button
               onClick={() => {
                 setShowAdjustForm(false)
-                setAdjustingProductId(null)
+                setAdjustingId(null)
               }}
               className="px-4 py-2 border border-border rounded-md hover:bg-accent"
             >
@@ -124,32 +116,35 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
         <table className="w-full">
           <thead className="bg-accent">
             <tr>
-              <th className="px-6 py-4 text-left font-bold">Item</th>
+              <th className="px-6 py-4 text-left font-bold">Ingredient</th>
+              <th className="px-6 py-4 text-left font-bold">Unit</th>
               <th className="px-6 py-4 text-left font-bold">Current Stock</th>
-              <th className="px-6 py-4 text-left font-bold">Min Threshold</th>
+              <th className="px-6 py-4 text-left font-bold">Reorder Level</th>
               <th className="px-6 py-4 text-left font-bold">Status</th>
               <th className="px-6 py-4 text-left font-bold">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {products.products.map((item) => (
+            {ingredients.map((item) => (
               <tr key={item.id} className="hover:bg-accent/50">
                 <td className="px-6 py-4 font-medium">{item.name}</td>
-                <td className="px-6 py-4">{item.stock}</td>
-                <td className="px-6 py-4">{item.minThreshold}</td>
+                <td className="px-6 py-4">{item.unit}</td>
+                <td className={`px-6 py-4 font-bold ${Number(item.stock_quantity) <= Number(item.reorder_level) ? "text-red-600" : "text-foreground"}`}>
+                  {item.stock_quantity}
+                </td>
+                <td className="px-6 py-4">{item.reorder_level}</td>
                 <td className="px-6 py-4">
                   <span
-                    className={`px-3 py-1 rounded text-sm font-bold ${
-                      item.stock <= item.minThreshold ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"
-                    }`}
+                    className={`px-3 py-1 rounded text-sm font-bold ${Number(item.stock_quantity) <= Number(item.reorder_level) ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"
+                      }`}
                   >
-                    {item.stock <= item.minThreshold ? "Low" : "In Stock"}
+                    {Number(item.stock_quantity) <= Number(item.reorder_level) ? "Low" : "OK"}
                   </span>
                 </td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => {
-                      setAdjustingProductId(String(item.id))
+                      setAdjustingId(item.id)
                       setShowAdjustForm(true)
                     }}
                     className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"
@@ -163,37 +158,39 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
         </table>
       </div>
 
-      {inventoryLogs.logs.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Inventory History</h3>
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-accent">
-                <tr>
-                  <th className="px-6 py-4 text-left font-bold">Product</th>
-                  <th className="px-6 py-4 text-left font-bold">Type</th>
-                  <th className="px-6 py-4 text-left font-bold">Quantity</th>
-                  <th className="px-6 py-4 text-left font-bold">Reason</th>
-                  <th className="px-6 py-4 text-left font-bold">User</th>
-                  <th className="px-6 py-4 text-left font-bold">Timestamp</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {inventoryLogs.logs.map((log: any) => (
-                  <tr key={log.id} className="hover:bg-accent/50">
-                    <td className="px-6 py-4">{log.productName}</td>
-                    <td className="px-6 py-4 capitalize">{log.type}</td>
-                    <td className="px-6 py-4">{log.quantity}</td>
-                    <td className="px-6 py-4">{log.reason || "-"}</td>
-                    <td className="px-6 py-4">{log.userName}</td>
-                    <td className="px-6 py-4">{log.timestamp}</td>
+      {
+        inventoryLogs.logs.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-xl font-bold mb-4">Inventory History</h3>
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-accent">
+                  <tr>
+                    <th className="px-6 py-4 text-left font-bold">Ingredient</th>
+                    <th className="px-6 py-4 text-left font-bold">Type</th>
+                    <th className="px-6 py-4 text-left font-bold">Qty Changed</th>
+                    <th className="px-6 py-4 text-left font-bold">Reason</th>
+                    <th className="px-6 py-4 text-left font-bold">User</th>
+                    <th className="px-6 py-4 text-left font-bold">Timestamp</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {inventoryLogs.logs.map((log: any) => (
+                    <tr key={log.id} className="hover:bg-accent/50">
+                      <td className="px-6 py-4">{log.ingredient_name || log.productName || "Unknown"}</td>
+                      <td className="px-6 py-4 capitalize">{log.log_type || log.type}</td>
+                      <td className="px-6 py-4">{log.quantity_changed || log.quantity}</td>
+                      <td className="px-6 py-4">{log.reason || "-"}</td>
+                      <td className="px-6 py-4">{log.user_name || log.userName}</td>
+                      <td className="px-6 py-4">{log.created_at ? new Date(log.created_at).toLocaleString() : log.timestamp}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   )
 }

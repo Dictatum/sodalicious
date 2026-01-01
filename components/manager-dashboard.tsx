@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useProducts, useDatabaseOrders, useUsers, useInventoryLogs } from "@/lib/hooks"
+import { useProducts, useDatabaseOrders, useUsers, useInventoryLogs, useActivityLogs } from "@/lib/hooks"
 import ProductManagement from "./manager/product-management"
 import InventoryManagement from "./manager/inventory-management"
 import OrderManagement from "./manager/order-management"
@@ -14,6 +14,8 @@ interface ManagerPanelProps {
   currentUser?: any
 }
 
+// ... (Top of file needs useActivityLogs added to import, checking if it is already there)
+
 export default function ManagerPanel({ onLogout, currentUser }: ManagerPanelProps) {
   const [activeTab, setActiveTab] = useState<
     "dashboard" | "products" | "inventory" | "orders" | "reports" | "users" | "logs"
@@ -22,6 +24,7 @@ export default function ManagerPanel({ onLogout, currentUser }: ManagerPanelProp
   const orders = useDatabaseOrders()
   const users = useUsers()
   const inventoryLogs = useInventoryLogs()
+  const activityLogs = useActivityLogs()
 
   return (
     <div className="flex h-screen bg-background">
@@ -43,11 +46,10 @@ export default function ManagerPanel({ onLogout, currentUser }: ManagerPanelProp
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`w-full text-left px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-3 ${
-                activeTab === tab.id
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent"
-              }`}
+              className={`w-full text-left px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-3 ${activeTab === tab.id
+                ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                : "text-sidebar-foreground hover:bg-sidebar-accent"
+                }`}
             >
               <span className="text-lg">{tab.icon}</span>
               {tab.label}
@@ -70,48 +72,13 @@ export default function ManagerPanel({ onLogout, currentUser }: ManagerPanelProp
         {activeTab === "orders" && <OrderManagement orders={orders} />}
         {activeTab === "reports" && <Reports />}
         {activeTab === "users" && <UserManagement users={users} />}
-        {activeTab === "logs" && <ActivityLogs />}
+        {activeTab === "logs" && <ActivityLogs logs={activityLogs.logs} />}
       </div>
     </div>
   )
 }
 
-function ActivityLogs() {
-  const sampleLogs = [
-    {
-      id: 1,
-      type: "Product",
-      action: "Updated",
-      details: "Iced Calamansi Soda price changed",
-      user: "Admin Manager",
-      timestamp: "2025-11-11 15:30",
-    },
-    {
-      id: 2,
-      type: "Inventory",
-      action: "Adjusted",
-      details: "Mango Yakult stock reduced by 5",
-      user: "Juan Dela Cruz",
-      timestamp: "2025-11-11 14:15",
-    },
-    {
-      id: 3,
-      type: "User",
-      action: "Created",
-      details: "New cashier account created",
-      user: "Admin Manager",
-      timestamp: "2025-11-11 13:00",
-    },
-    {
-      id: 4,
-      type: "Order",
-      action: "Cancelled",
-      details: "Order ORD00005 cancelled",
-      user: "Maria Santos",
-      timestamp: "2025-11-11 12:45",
-    },
-  ]
-
+function ActivityLogs({ logs }: { logs: any[] }) {
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold mb-8 text-foreground">Activity Logs</h2>
@@ -127,13 +94,17 @@ function ActivityLogs() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {sampleLogs.map((log) => (
+            {logs.map((log) => (
               <tr key={log.id} className="hover:bg-primary/5 transition-colors">
-                <td className="px-6 py-4 font-bold text-foreground">{log.type}</td>
-                <td className="px-6 py-4 text-foreground">{log.action}</td>
-                <td className="px-6 py-4 text-foreground">{log.details}</td>
-                <td className="px-6 py-4 text-foreground">{log.user}</td>
-                <td className="px-6 py-4 text-muted-foreground">{log.timestamp}</td>
+                <td className="px-6 py-4 font-bold text-foreground capitalize">{log.entity_type}</td>
+                <td className="px-6 py-4 text-foreground capitalize">{log.action_type || log.action}</td>
+                <td className="px-6 py-4 text-foreground">
+                  {typeof log.details === 'string' ? log.details : JSON.stringify(log.details)}
+                </td>
+                <td className="px-6 py-4 text-foreground">{log.user_name || "System"}</td>
+                <td className="px-6 py-4 text-muted-foreground">
+                  {log.created_at ? new Date(log.created_at).toLocaleString() : ""}
+                </td>
               </tr>
             ))}
           </tbody>

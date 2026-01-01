@@ -11,7 +11,7 @@ interface ManagerDashboardProps {
 
 export default function ManagerDashboard({ products, orders, inventoryLogs }: ManagerDashboardProps) {
   const menuSync = useMenuSyncHook()
-  
+
   // Calculate today's sales from database orders
   const todaysSales = (orders.orders || [])
     .filter((o) => {
@@ -20,13 +20,13 @@ export default function ManagerDashboard({ products, orders, inventoryLogs }: Ma
       return orderDate === today
     })
     .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)
-  
+
   const totalOrders = (orders.orders || []).filter((o) => {
     const orderDate = new Date(o.created_at).toDateString()
     const today = new Date().toDateString()
     return orderDate === today
   }).length
-  
+
   const lowStockItems = menuSync.getLowStockItems()
 
   const topSelling = menuSync.menuItems
@@ -71,7 +71,7 @@ export default function ManagerDashboard({ products, orders, inventoryLogs }: Ma
         <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="text-xl font-bold mb-4">Recent Orders</h3>
           <div className="space-y-3">
-            {(orders.orders || []).slice(-3).map((order) => (
+            {(orders.orders || []).slice(0, 3).map((order) => (
               <div
                 key={order.id}
                 className="flex justify-between items-center pb-3 border-b border-border last:border-b-0"

@@ -208,17 +208,71 @@ export function useInventoryLogs() {
 }
 
 export function useActivityLogs() {
-  const [logs, setLogs] = useState<ActivityLog[]>([])
+  const [logs, setLogs] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const addLog = useCallback(
-    (log: Omit<ActivityLog, "id">) => {
-      const newLog = { ...log, id: Math.max(...logs.map((l) => l.id), 0) + 1 }
-      setLogs([...logs, newLog])
-    },
-    [logs],
-  )
+  const fetchLogs = useCallback(async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/activity-logs")
+      if (!response.ok) throw new Error("Failed to fetch activity logs")
+      const data = await response.json()
+      setLogs(data || [])
+    } catch (err) {
+      console.error("[ActivityLogs] Error fetching logs:", err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
-  return { logs, addLog }
+  useEffect(() => {
+    fetchLogs()
+    // Poll every 5 seconds
+    const interval = setInterval(fetchLogs, 5000)
+    return () => clearInterval(interval)
+  }, [fetchLogs])
+
+  const addLog = useCallback(async (log: any) => {
+    try {
+      await fetch("/api/activity-logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(log)
+      })
+      fetchLogs()
+    } catch (e) {
+      console.error(e)
+    }
+  }, [fetchLogs])
+
+  return { logs, addLog, loading, refetch: fetchLogs }
+}
+
+export function useIngredients() {
+  const [ingredients, setIngredients] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchIngredients = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await fetch("/api/ingredients")
+      if (!res.ok) throw new Error("Failed to fetch")
+      const data = await res.json()
+      setIngredients(data || [])
+    } catch (e) {
+      console.error("[useIngredients] error", e)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchIngredients()
+    const interval = setInterval(fetchIngredients, 5000)
+    return () => clearInterval(interval)
+  }, [fetchIngredients])
+
+  return { ingredients, loading, refetch: fetchIngredients }
 }
 
 /**
@@ -263,42 +317,52 @@ export function useMenuSync() {
     return menuItems.filter((item) => item.stock <= item.minThreshold)
   }, [menuItems])
 
-  // Listen for external updates (other panels / API actions) and poll DB for cross-client sync
+  // Poll /api/products to reflect DB-backed stock changes across multiple clients
+  const fetchStock = useCallback(async () => {
+    try {
+      const res = await fetch("/api/products")
+      if (!res.ok) return
+      const data = await res.json()
+      // Merge DB stock into local menu items
+      // We match by Name since IDs might differ between mock and DB
+      const stockMap = new Map<string, number>(data.map((p: any) => [p.name, p.stock_quantity]))
+
+      setMenuItems((prev) =>
+        prev.map((mi) => ({
+          ...mi,
+          // If DB has stock, use it. Otherwise keep local.
+          // Note: If DB returns 0, use 0.
+          stock: stockMap.has(mi.name) ? (stockMap.get(mi.name) as number) : mi.stock
+        }))
+      )
+    } catch (e) {
+      console.warn("[useMenuSync] poll error", e)
+    }
+  }, [])
+
+  // Listen for external updates (other panels / API actions)
   useEffect(() => {
-    const onMenuUpdate = () => setMenuItems(getBaseMenuItems())
+    const onMenuUpdate = () => {
+      // Re-fetch stock instead of resetting to hardcoded defaults
+      fetchStock()
+    }
+
     if (typeof window !== "undefined") {
       window.addEventListener("menu:update", onMenuUpdate)
     }
 
-    // Poll /api/products to reflect DB-backed stock changes across multiple clients
-    let mounted = true
-    const poll = async () => {
-      try {
-        const res = await fetch("/api/products")
-        if (!res.ok) return
-        const data = await res.json()
-        if (!mounted) return
-        const stockMap = new Map<string, number>(data.map((p: any) => [p.name, p.stock_quantity]))
-        setMenuItems((prev) =>
-          prev.map((mi) => ({ ...mi, stock: stockMap.has(mi.name) ? (stockMap.get(mi.name) as number) : mi.stock })),
-        )
-      } catch (e) {
-        console.warn("[useMenuSync] poll error", e)
-      }
-    }
-
-    // initial poll + interval
-    poll()
-    const id = setInterval(poll, 5000)
+    // initial poll
+    fetchStock()
+    // interval poll
+    const id = setInterval(fetchStock, 5000)
 
     return () => {
       if (typeof window !== "undefined") {
         window.removeEventListener("menu:update", onMenuUpdate)
       }
-      mounted = false
       clearInterval(id)
     }
-  }, [])
+  }, [fetchStock])
 
   return {
     menuItems,
@@ -310,7 +374,6 @@ export function useMenuSync() {
     getAllCategories,
     getCategoryEmoji,
     getLowStockItems,
-    // allow manual refresh when needed
-    refresh: () => setMenuItems(getBaseMenuItems()),
+    refresh: fetchStock,
   }
 }
