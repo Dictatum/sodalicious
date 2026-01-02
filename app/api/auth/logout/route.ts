@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
 
         if (user_id) {
             try {
-                await sql`INSERT INTO activity_logs (user_id, action, action_type, entity_type, entity_id, details) VALUES (${user_id}, 'Logged out', 'logout', 'User', ${user_id}, 'User logged out')`
+                await sql`INSERT INTO activity_logs (user_id, action, action_type, entity_type, entity_id, details) VALUES (${user_id}, 'Logged out', 'logout', 'User', ${user_id}, ${JSON.stringify({ message: 'User logged out' })})`
             } catch (e) {
                 console.error("Failed to log logout", e)
             }

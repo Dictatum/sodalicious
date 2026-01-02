@@ -105,11 +105,29 @@ export default function LoginPanel({ onLogin }: LoginPanelProps) {
           </button>
         </form>
 
-        <div className="space-y-2 pt-4 border-t border-border">
-          <p className="text-center text-xs text-muted-foreground font-medium mb-3">Demo Credentials:</p>
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p className="font-semibold">Cashier: cashier@sodalicious.com / 123456</p>
-            <p className="font-semibold">Manager: manager@sodalicious.com / 123456</p>
+        <div className="space-y-4 pt-4 border-t border-border">
+          <p className="text-center text-xs text-muted-foreground font-medium mb-1">Quick Login (Demo):</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("cashier@sodalicious.com")
+                setPassword("123456")
+              }}
+              className="p-2 text-xs border border-primary/20 bg-primary/5 rounded hover:bg-primary/10 transition-colors text-primary font-medium"
+            >
+              Cashier
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("manager@sodalicious.com")
+                setPassword("123456")
+              }}
+              className="p-2 text-xs border border-purple-500/20 bg-purple-500/5 rounded hover:bg-purple-500/10 transition-colors text-purple-600 font-medium"
+            >
+              Manager
+            </button>
           </div>
         </div>
       </div>

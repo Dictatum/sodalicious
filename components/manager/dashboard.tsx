@@ -35,13 +35,33 @@ export default function ManagerDashboard({ products, orders, inventoryLogs }: Ma
   }).length
 
   const lowStockMenu = menuSync.getLowStockItems()
-  const lowStockIngredients = (ingredients || []).filter(i => Number(i.stock_quantity) <= Number(i.reorder_level))
+  const lowStockIngredients = (ingredients || []).filter(i => Number(i.stock_quantity) < 18 || Number(i.stock_quantity) <= Number(i.reorder_level))
   const totalLowStock = lowStockMenu.length + lowStockIngredients.length
 
-  const topSelling = menuSync.menuItems
-    .slice()
-    .sort((a, b) => a.stock - b.stock) // Show lowest stock first as "Top Priority"
-    .slice(0, 3)
+  // Calculate Top Selling based on actual sales
+  const productSales = new Map<string, number>()
+
+  if (orders.orders) {
+    orders.orders.forEach((order: any) => {
+      if (order.items && Array.isArray(order.items)) {
+        order.items.forEach((item: any) => {
+          // Normalize name to handle variants if needed or just use product_id
+          const name = item.name || "Unknown Product"
+          const qty = Number(item.quantity) || 0
+          productSales.set(name, (productSales.get(name) || 0) + qty)
+        })
+      }
+    })
+  }
+
+  const topSelling = Array.from(productSales.entries())
+    .map(([name, count]) => {
+      // Find product details for image/stock info
+      const product = menuSync.menuItems.find(p => p.name === name) || { id: "unknown", name, stock: 0, sizes: [] }
+      return { ...product, salesCount: count }
+    })
+    .sort((a, b) => b.salesCount - a.salesCount)
+    .slice(0, 5)
 
   return (
     <div className="p-8 max-w-[1600px] mx-auto">
@@ -108,7 +128,7 @@ export default function ManagerDashboard({ products, orders, inventoryLogs }: Ma
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium text-muted-foreground">{item.sizes.length} Variants</p>
+                  <p className="text-sm font-bold text-primary">{(item as any).salesCount} sold</p>
                 </div>
               </div>
             ))}

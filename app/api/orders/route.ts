@@ -1,6 +1,6 @@
 import { sql } from "@/lib/db"
-import { deductStock, getProductById } from "@/lib/menu-data"
 import { type NextRequest, NextResponse } from "next/server"
+
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,6 +12,23 @@ export async function GET(request: NextRequest) {
       LEFT JOIN users u ON o.cashier_id = u.id 
       ORDER BY o.created_at DESC LIMIT ${Number.parseInt(limit)}
     `
+
+    // Fetch items for these orders
+    if (orders.length > 0) {
+      const orderIds = orders.map((o: any) => o.id)
+      const items = await sql`
+        SELECT oi.*, p.name 
+        FROM order_items oi
+        LEFT JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id IN (${orderIds.join(',')})
+      `
+
+      // Attach items to orders
+      for (const order of orders) {
+        (order as any).items = items.filter((i: any) => i.order_id === order.id)
+      }
+    }
+
     return NextResponse.json(orders)
   } catch (error) {
     console.error("[API] Orders GET error:", error)
@@ -32,16 +49,7 @@ export async function POST(request: NextRequest) {
 
     const orderNumber = `ORD-${Date.now()}`
 
-    // 1. Deduct Stock in memory (Immediate UI feedback)
-    for (const item of items) {
-      const pId = item.productId || item.product_id
-      if (pId) {
-        deductStock(pId.toString(), item.quantity)
-        console.log(`[Order API] In-memory deduction for ${item.name} (${pId})`)
-      }
-    }
-
-    // 2. Database Sync (Persistent deduction)
+    // Create order and decrement stock
     try {
       // Ensure numeric cashierId
       let validCashierId = 1
@@ -80,8 +88,16 @@ export async function POST(request: NextRequest) {
 
           await sql`
             INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) 
-            VALUES (${orderId}, ${dbProductId}, ${item.quantity}, ${item.price}, ${item.subtotal})
+            VALUES (${orderId}, ${dbProductId}, ${item.quantity}, ${item.price}, ${item.subtotal || (Number(item.price) * Number(item.quantity))})
           `
+
+          // Deduct Product Stock in Database
+          await sql`
+            UPDATE products 
+            SET stock_quantity = stock_quantity - ${item.quantity}
+            WHERE id = ${dbProductId}
+          `
+          console.log(`[Order API] Deducted ${item.quantity} from product stock (ID: ${dbProductId})`)
 
           // Ingredient Deduction Logic
           const recipes = await sql`
@@ -103,8 +119,8 @@ export async function POST(request: NextRequest) {
             await sql`UPDATE ingredients SET stock_quantity = ${newStock} WHERE id = ${recipe.ingredient_id}`
 
             await sql`
-              INSERT INTO inventory_logs (ingredient_id, user_id, log_type, quantity_changed, reason, previous_quantity, new_quantity)
-              VALUES (${recipe.ingredient_id}, ${validCashierId}, 'sale', ${-deduction}, ${`Order ${orderNumber}`}, ${prevStock}, ${newStock})
+              INSERT INTO inventory_logs (ingredient_id, user_id, log_type, quantity_changed, reason)
+              VALUES (${recipe.ingredient_id}, ${validCashierId}, 'sale', ${-deduction}, ${`Order ${orderNumber}`})
             `
           }
         } else {
@@ -124,12 +140,12 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString()
       }, { status: 201 })
 
-    } catch (dbError) {
+    } catch (dbError: any) {
       console.error("[Order API] ❌ Database synchronization failed:", dbError)
       return NextResponse.json({
         order_number: orderNumber,
         order_status: "partial",
-        warning: "Database sync failed, but stock was updated in-memory.",
+        warning: `Database sync failed: ${dbError.message || dbError}`,
         created_at: new Date().toISOString()
       }, { status: 201 })
     }

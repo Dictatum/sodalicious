@@ -146,8 +146,16 @@ if (isPostgres) {
             for(let i = 0; i < values.length; i++){
                 query += "?" + strings[i + 1];
             }
+            // DEBUG LOGGING
+            if ("TURBOPACK compile-time truthy", 1) {
+                console.log(`[DB] Query: ${query.trim().replace(/\s+/g, ' ')}`);
+                if (values.length > 0) console.log(`[DB] Values:`, values);
+            }
             const [rows] = await connection.query(query, values);
             return rows;
+        } catch (err) {
+            console.error(`[DB ERROR] Query failed:`, err);
+            throw err;
         } finally{
             connection.release();
         }
@@ -1046,7 +1054,9 @@ function getBaseMenuItems() {
             description: item.description,
             stock: item.stock,
             minThreshold: item.minThreshold,
-            image: item.image
+            image: item.image,
+            bottleneck_ingredient: item.bottleneck_ingredient,
+            ingredients_list: item.ingredients_list
         }));
 }
 function deductStock(productId, quantity) {
@@ -1126,8 +1136,11 @@ async function GET(request) {
     }
 }
 async function POST(request) {
+    console.log("[Order API] Incoming POST request");
     try {
-        const { cashier_id, customer_name, total_amount, payment_method, items } = await request.json();
+        const body = await request.json();
+        const { cashier_id, customer_name, total_amount, payment_method, items } = body;
+        console.log(`[Order API] Processing order with ${items?.length} items`);
         if (!items || items.length === 0) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "Order must have at least one item"
@@ -1135,147 +1148,99 @@ async function POST(request) {
                 status: 400
             });
         }
-        // Generate order number
         const orderNumber = `ORD-${Date.now()}`;
-        // Validate all items have sufficient stock in menu-data
+        // 1. Deduct Stock in memory (Immediate UI feedback)
         for (const item of items){
-            const product = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$menu$2d$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getProductById"])(item.product_id);
-            if (!product || product.stock < item.quantity) {
-                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                    error: `Insufficient stock for ${item.name}. Available: ${product?.stock || 0}`
-                }, {
-                    status: 400
-                });
+            const pId = item.productId || item.product_id;
+            if (pId) {
+                (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$menu$2d$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["deductStock"])(pId.toString(), item.quantity);
+                console.log(`[Order API] In-memory deduction for ${item.name} (${pId})`);
             }
         }
-        // Deduct stock from in-memory menu-data
-        for (const item of items){
-            const deducted = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$menu$2d$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["deductStock"])(item.product_id, item.quantity);
-            if (!deducted) {
-                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                    error: `Failed to deduct stock for product ${item.product_id}`
-                }, {
-                    status: 400
-                });
-            }
-            console.log(`[Stock] Deducted ${item.quantity} units of ${item.product_id} from memory. Remaining: ${(0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$menu$2d$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getProductById"])(item.product_id)?.stock || 0}`);
-        }
+        // 2. Database Sync (Persistent deduction)
         try {
-            // First, ensure we have a valid cashier_id by fetching from database
-            let validCashierId = cashier_id;
-            // Always validate the cashier exists in database
-            let cashierExists = false;
-            if (validCashierId) {
-                const cashierCheck = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-          SELECT id FROM users WHERE id = ${validCashierId} AND role = 'cashier' LIMIT 1
-        `;
-                cashierExists = cashierCheck.length > 0;
+            // Ensure numeric cashierId
+            let validCashierId = 1;
+            if (cashier_id && !isNaN(Number(cashier_id))) {
+                validCashierId = Number(cashier_id);
+            } else {
+                const fallback = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id FROM users WHERE role = 'cashier' LIMIT 1`;
+                if (fallback.length > 0) validCashierId = fallback[0].id;
             }
-            if (!cashierExists) {
-                // Get first cashier from database
-                const cashiers = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-          SELECT id FROM users WHERE role = 'cashier' LIMIT 1
-        `;
-                if (cashiers.length > 0) {
-                    validCashierId = cashiers[0].id;
-                    console.log(`[Order] Using valid cashier ID from database: ${validCashierId}`);
-                } else {
-                    console.error("[Order] No cashiers found in database!");
-                    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                        error: "No cashiers available in database. Database may not be seeded."
-                    }, {
-                        status: 500
-                    });
-                }
-            }
-            // Insert order into database
+            console.log(`[Order API] Using Cashier ID: ${validCashierId}`);
+            // Create Order
             const orderResult = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
         INSERT INTO orders (order_number, cashier_id, customer_name, total_amount, payment_method, order_status) 
-        VALUES (${orderNumber}, ${validCashierId}, ${customer_name}, ${total_amount}, ${payment_method}, 'pending')
+        VALUES (${orderNumber}, ${validCashierId}, ${customer_name}, ${total_amount}, ${payment_method}, 'completed')
       `;
-            // For MySQL, we need to fetch the inserted record separately
-            const insertedOrder = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-        SELECT * FROM orders WHERE order_number = ${orderNumber}
-      `;
-            const orderId = insertedOrder[0]?.id || orderResult.insertId;
-            console.log(`[DB] Order ${orderNumber} created with ID: ${orderId}`);
-            // Insert order items and update product stock in database (best-effort mapping between menu-data and DB)
+            const inserted = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id FROM orders WHERE order_number = ${orderNumber} LIMIT 1`;
+            const orderId = inserted[0]?.id || orderResult.insertId;
+            console.log(`[Order API] Created DB Order ID: ${orderId}`);
             for (const item of items){
-                // First, map the menu item ID to database product ID
-                const baseName = String(item.name).split(" (")[0];
-                let dbProduct = null;
-                try {
-                    // try numeric id mapping
-                    if (!Number.isNaN(Number(item.product_id))) {
-                        const byId = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id, name, stock_quantity FROM products WHERE id = ${Number(item.product_id)}`;
-                        if (byId.length > 0) dbProduct = byId[0];
-                    }
-                    // fallback: try by name
-                    if (!dbProduct) {
-                        const byName = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id, name, stock_quantity FROM products WHERE name = ${baseName} LIMIT 1`;
-                        if (byName.length > 0) dbProduct = byName[0];
-                    }
-                    // If we found the product, use its numeric ID for order_items
-                    let dbProductId = dbProduct?.id;
-                    // If product ID couldn't be resolved, skip order_items insertion to avoid constraint violation
-                    if (!dbProductId) {
-                        console.warn(`[DB] Could not map product ID for item: ${baseName} / ${item.product_id}. Skipping order_items insertion.`);
-                        continue;
-                    }
+                const fullName = String(item.name);
+                const baseName = fullName.split(" (")[0];
+                console.log(`[Order API] Mapping item: "${fullName}" (Base: "${baseName}")`);
+                let products = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id FROM products WHERE name = ${fullName} LIMIT 1`;
+                if (!products || products.length === 0) {
+                    products = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id FROM products WHERE name = ${baseName} LIMIT 1`;
+                }
+                if (products && products.length > 0) {
+                    const dbProductId = products[0].id;
+                    console.log(`[Order API] Found DB Product: ${fullName} (ID: ${dbProductId})`);
                     await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
             INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) 
             VALUES (${orderId}, ${dbProductId}, ${item.quantity}, ${item.price}, ${item.subtotal})
           `;
-                    if (dbProduct) {
-                        const newDbStock = dbProduct.stock_quantity - item.quantity;
-                        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`UPDATE products SET stock_quantity = ${newDbStock} WHERE id = ${dbProduct.id}`;
-                        // sync server in-memory menu-data to reflect DB change (best-effort)
-                        try {
-                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$menu$2d$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["setStockByName"])(dbProduct.name, newDbStock);
-                        } catch (e) {
-                            console.warn("[Orders] Failed to sync in-memory menu-data after DB update", e);
-                        }
-                        console.log(`[DB] Updated stock for product ${dbProduct.id} (${dbProduct.name}): -${item.quantity} units`);
-                    } else {
-                        // No DB mapping found; still log and continue
-                        console.warn(`[DB] Could not find DB product to update for order item: ${item.product_id} / ${baseName}`);
+                    // Ingredient Deduction Logic
+                    const recipes = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+            SELECT pi.ingredient_id, pi.amount, i.stock_quantity, i.name as ing_name
+            FROM product_ingredients pi
+            JOIN ingredients i ON pi.ingredient_id = i.id
+            WHERE pi.product_id = ${dbProductId}
+          `;
+                    console.log(`[Order API] Found ${recipes.length} ingredients for ${baseName}`);
+                    for (const recipe of recipes){
+                        const deduction = Number(recipe.amount) * Number(item.quantity);
+                        const prevStock = Number(recipe.stock_quantity);
+                        const newStock = prevStock - deduction;
+                        console.log(`[Order API] Deducting ${deduction} from ${recipe.ing_name}. Prev: ${prevStock}, New: ${newStock}`);
+                        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`UPDATE ingredients SET stock_quantity = ${newStock} WHERE id = ${recipe.ingredient_id}`;
+                        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+              INSERT INTO inventory_logs (ingredient_id, user_id, log_type, quantity_changed, reason, previous_quantity, new_quantity)
+              VALUES (${recipe.ingredient_id}, ${validCashierId}, 'sale', ${-deduction}, ${`Order ${orderNumber}`}, ${prevStock}, ${newStock})
+            `;
                     }
-                } catch (err) {
-                    console.error("[DB] Error updating product stock for order item", err);
+                } else {
+                    console.warn(`[Order API] ⚠️ Could not find product in DB: ${baseName}`);
                 }
             }
-            console.log(`[Order] ✓ Order ${orderNumber} created successfully and database updated`);
+            console.log(`[Order API] ✓ Order ${orderNumber} fully processed and synced.`);
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                id: orderResult[0].id,
+                id: orderId,
                 order_number: orderNumber,
                 customer_name,
                 total_amount,
                 payment_method,
-                order_status: "pending",
+                order_status: "completed",
                 created_at: new Date().toISOString()
             }, {
                 status: 201
             });
         } catch (dbError) {
-            console.error("[DB Error]", dbError);
-            // Stock is already deducted from menu-data, but DB failed
+            console.error("[Order API] ❌ Database synchronization failed:", dbError);
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                id: Date.now(),
                 order_number: orderNumber,
-                customer_name,
-                total_amount,
-                payment_method,
-                order_status: "pending",
-                warning: "Order created and stock reduced in-memory, but database sync may have failed",
+                order_status: "partial",
+                warning: "Database sync failed, but stock was updated in-memory.",
                 created_at: new Date().toISOString()
             }, {
                 status: 201
             });
         }
     } catch (error) {
-        console.error("[API] Orders POST error:", error);
+        console.error("[Order API] ❌ Critical Error:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to create order"
+            error: "Failed to process order"
         }, {
             status: 500
         });

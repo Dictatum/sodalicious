@@ -118,7 +118,8 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
           name: item.name,
           size: item.size,
           price: item.price,
-          quantity: item.quantity
+          quantity: item.quantity,
+          subtotal: item.price * item.quantity
         })),
         total_amount: total,
         payment_method: paymentMethod,
@@ -452,6 +453,18 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
                       <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{order.payment_method || "CASH"}</p>
                     </div>
                   </div>
+
+                  {/* Order Items List */}
+                  {order.items && order.items.length > 0 && (
+                    <div className="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      {order.items.map((item: any, idx: number) => (
+                        <div key={`${order.id}-item-${idx}`} className="flex justify-between text-[10px] font-bold text-slate-600 mb-1 last:mb-0">
+                          <span>{item.quantity}x {item.name}</span>
+                          <span className="text-slate-400">({item.size})</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 pt-4 border-t border-slate-50">
                     <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center">
                       <Clock className="w-4 h-4 text-slate-300" />

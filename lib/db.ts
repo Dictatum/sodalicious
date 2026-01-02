@@ -88,6 +88,7 @@ export interface Order {
   payment_method: string
   order_status: string
   created_at: string
+  items?: any[]
 }
 
 export interface OrderItem {

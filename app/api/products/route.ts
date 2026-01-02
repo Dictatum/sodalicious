@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const productsResult = await sql`
       SELECT 
         p.id, p.name, p.category, p.price, p.description, p.is_active, p.created_at, p.updated_at,
-        COALESCE(MIN(FLOOR(i.stock_quantity / pi.amount)), 0) as stock_quantity,
+        p.stock_quantity,
         COALESCE(
           (
             SELECT i2.name 

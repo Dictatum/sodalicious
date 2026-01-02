@@ -141,29 +141,62 @@ export function useDatabaseOrders() {
 }
 
 export function useUsers() {
-  const [users, setUsers] = useState<User[]>(mockUsers)
+  const [users, setUsers] = useState<User[]>([])
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await fetch("/api/users")
+      if (res.ok) {
+        const data = await res.json()
+        setUsers(data)
+      }
+    } catch (e) {
+      console.error("Failed to fetch users", e)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchUsers()
+  }, [fetchUsers])
 
   const addUser = useCallback(
-    (user: Omit<User, "id">) => {
-      const newUser = { ...user, id: Math.max(...users.map((u) => u.id), 0) + 1 }
-      setUsers([...users, newUser])
-      return newUser
+    async (user: any) => {
+      try {
+        const res = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(user)
+        })
+        if (res.ok) fetchUsers()
+      } catch (e) {
+        console.error(e)
+      }
     },
-    [users],
+    [fetchUsers],
   )
 
   const updateUser = useCallback(
-    (id: number, updates: Partial<User>) => {
-      setUsers(users.map((u) => (u.id === id ? { ...u, ...updates } : u)))
+    async (id: number, updates: any) => {
+      try {
+        const res = await fetch(`/api/users/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates)
+        })
+        if (res.ok) fetchUsers()
+      } catch (e) { console.error(e) }
     },
-    [users],
+    [fetchUsers],
   )
 
   const deleteUser = useCallback(
-    (id: number) => {
-      setUsers(users.filter((u) => u.id !== id))
+    async (id: number) => {
+      try {
+        const res = await fetch(`/api/users/${id}`, { method: "DELETE" })
+        if (res.ok) fetchUsers()
+      } catch (e) { console.error(e) }
     },
-    [users],
+    [fetchUsers],
   )
 
   return { users, addUser, updateUser, deleteUser }
@@ -314,7 +347,7 @@ export function useMenuSync() {
   )
 
   const getLowStockItems = useCallback(() => {
-    return menuItems.filter((item) => item.stock <= item.minThreshold)
+    return menuItems.filter((item) => item.stock < 18 || item.stock <= item.minThreshold)
   }, [menuItems])
 
   // Poll /api/products to reflect DB-backed stock changes across multiple clients

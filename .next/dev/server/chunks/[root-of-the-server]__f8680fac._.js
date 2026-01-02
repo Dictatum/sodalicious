@@ -146,8 +146,16 @@ if (isPostgres) {
             for(let i = 0; i < values.length; i++){
                 query += "?" + strings[i + 1];
             }
+            // DEBUG LOGGING
+            if ("TURBOPACK compile-time truthy", 1) {
+                console.log(`[DB] Query: ${query.trim().replace(/\s+/g, ' ')}`);
+                if (values.length > 0) console.log(`[DB] Values:`, values);
+            }
             const [rows] = await connection.query(query, values);
             return rows;
+        } catch (err) {
+            console.error(`[DB ERROR] Query failed:`, err);
+            throw err;
         } finally{
             connection.release();
         }
@@ -195,6 +203,12 @@ async function POST(request) {
                 const user = result[0];
                 // Simple password check (use demo password or demo fallback)
                 if (password === "123456") {
+                    // Log login activity
+                    try {
+                        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`INSERT INTO activity_logs (user_id, action, action_type, entity_type, entity_id, details) VALUES (${user.id}, 'Logged in', 'login', 'User', ${user.id}, 'User logged into the system')`;
+                    } catch (e) {
+                        console.error("Failed to log login activity", e);
+                    }
                     return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                         success: true,
                         user,
@@ -221,17 +235,11 @@ async function POST(request) {
                 name: "Manager",
                 role: "manager",
                 is_active: true
-            },
-            {
-                id: 3,
-                email: "inventory@sodalicious.com",
-                name: "Inventory Officer",
-                role: "inventory_officer",
-                is_active: true
             }
         ];
         const demoUser = demoUsers.find((u)=>u.email === email);
         if (demoUser && password === "123456") {
+            // Log demo login activity if possible (skip db log for demo/fallback user if they don't exist in DB)
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 success: true,
                 user: demoUser,

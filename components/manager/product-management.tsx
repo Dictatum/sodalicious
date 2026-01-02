@@ -235,8 +235,8 @@ export default function ProductManagement({ products }: ProductManagementProps) 
                   <td className="px-6 py-4 font-mono font-medium">₱{displayPrice.toFixed(2)}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${item.stock <= 0 ? "bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" : item.stock <= item.minThreshold ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" : "bg-green-500"}`}></div>
-                      <span className={item.stock <= 0 ? "text-red-600 font-black" : item.stock <= item.minThreshold ? "text-amber-600 font-bold" : "font-medium"}>
+                      <div className={`w-2 h-2 rounded-full ${item.stock < 18 ? "bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" : item.stock <= item.minThreshold ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" : "bg-green-500"}`}></div>
+                      <span className={item.stock < 18 ? "text-red-600 font-black" : item.stock <= item.minThreshold ? "text-amber-600 font-bold" : "font-medium"}>
                         {item.stock > 0 ? `${item.stock} in stock` : "OUT OF STOCK"}
                       </span>
                     </div>

@@ -152,8 +152,16 @@ if (isPostgres) {
             for(let i = 0; i < values.length; i++){
                 query += "?" + strings[i + 1];
             }
+            // DEBUG LOGGING
+            if ("TURBOPACK compile-time truthy", 1) {
+                console.log(`[DB] Query: ${query.trim().replace(/\s+/g, ' ')}`);
+                if (values.length > 0) console.log(`[DB] Values:`, values);
+            }
             const [rows] = await connection.query(query, values);
             return rows;
+        } catch (err) {
+            console.error(`[DB ERROR] Query failed:`, err);
+            throw err;
         } finally{
             connection.release();
         }
@@ -193,7 +201,7 @@ async function GET(request) {
         // Totals
         const totalsQuery = `
       SELECT COUNT(*) AS totalOrders, COALESCE(SUM(total_amount), 0) AS totalSales
-      FROM orders
+      FROM orders o
       WHERE ${whereClause}
     `;
         const totalsRes = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]([

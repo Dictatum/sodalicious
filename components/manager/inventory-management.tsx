@@ -16,7 +16,7 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
   const [adjustingId, setAdjustingId] = useState<number | null>(null)
   const [adjustmentData, setAdjustmentData] = useState({ quantity: 0, type: "restock", reason: "" })
 
-  const lowStockItems = ingredients.filter(i => Number(i.stock_quantity) <= Number(i.reorder_level))
+  const lowStockItems = ingredients.filter(i => Number(i.stock_quantity) < 18 || Number(i.stock_quantity) <= Number(i.reorder_level))
 
   const handleAdjustment = async () => {
     if (adjustingId) {
@@ -126,7 +126,7 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
           </thead>
           <tbody className="divide-y divide-border">
             {ingredients.map((item) => {
-              const isLow = Number(item.stock_quantity) <= Number(item.reorder_level)
+              const isLow = Number(item.stock_quantity) < 18 || Number(item.stock_quantity) <= Number(item.reorder_level)
               return (
                 <tr key={item.id} className={`hover:bg-accent/50 transition-colors ${isLow ? "bg-red-50" : ""}`}>
                   <td className="px-6 py-4 font-medium">{item.name}</td>
