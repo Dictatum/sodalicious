@@ -10,6 +10,8 @@ export interface Product {
   size?: string
   baseId?: string
   categoryCode?: string
+  ingredients_list?: string
+  bottleneck_ingredient?: string
 }
 
 export interface CartItem {

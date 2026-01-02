@@ -16,6 +16,7 @@ export default function ProductManagement({ products }: ProductManagementProps) 
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [loadingDetails, setLoadingDetails] = useState(false)
+  const [activeCategory, setActiveCategory] = useState("All")
 
   const [formData, setFormData] = useState<{
     name: string
@@ -37,12 +38,14 @@ export default function ProductManagement({ products }: ProductManagementProps) 
     ingredients: []
   })
 
-  // Derived from menuSync for display list
-  const filteredItems = menuSync.menuItems.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Derived from database products for display list
+  const filteredItems = (products.products || []).filter((item) => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = activeCategory === "All" || item.category === activeCategory
+    return matchesSearch && matchesCategory
+  })
 
-  const noRecipeCount = menuSync.menuItems.filter(item => !item.ingredients_list || item.bottleneck_ingredient === 'Recipe Missing').length
+  const noRecipeCount = (products.products || []).filter(item => !item.ingredients_list || item.bottleneck_ingredient === 'Recipe Missing').length
 
   const handleEdit = async (item: any) => {
     setEditingId(String(item.id))
@@ -135,25 +138,49 @@ export default function ProductManagement({ products }: ProductManagementProps) 
             )}
           </div>
         </div>
-        <button
-          onClick={() => {
-            setEditingId(null)
-            setFormData({
-              name: "",
-              category: "Hot Coffee",
-              price: 0,
-              description: "",
-              stock_quantity: 0,
-              min_threshold: 10,
-              size: "M",
-              ingredients: []
-            })
-            setShowForm(true)
-          }}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-        >
-          <Plus className="w-5 h-5" /> Add Product
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={async () => {
+              if (confirm("This will regenerate all recipes based on standard patterns. Continue?")) {
+                try {
+                  const res = await fetch("/api/admin/fix-recipes")
+                  const data = await res.json()
+                  if (data.success) {
+                    alert("Recipes repaired successfully!")
+                    products.refetch()
+                  } else {
+                    alert("Failed: " + data.error)
+                  }
+                } catch (e) {
+                  alert("Error repairing recipes")
+                }
+              }
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white rounded-lg font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20"
+          >
+            <RefreshCw className="w-5 h-5" />
+            Repair Recipes
+          </button>
+          <button
+            onClick={() => {
+              setEditingId(null)
+              setFormData({
+                name: "",
+                category: "Hot Coffee",
+                price: 0,
+                description: "",
+                stock_quantity: 0,
+                min_threshold: 10,
+                size: "M",
+                ingredients: []
+              })
+              setShowForm(true)
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+          >
+            <Plus className="w-5 h-5" /> Add Product
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -254,6 +281,22 @@ export default function ProductManagement({ products }: ProductManagementProps) 
           </div>
         </div>
       )}
+
+      {/* Category Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-2 no-scrollbar">
+        {["All", "Hot Coffee", "Iced Coffee", "Frappes", "Soda Series", "Yakult Series", "Matcha Series", "Combo Meals", "Snacks"].map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap transition-all border-2 ${activeCategory === cat
+                ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
+                : "bg-white border-gray-100 text-gray-400 hover:border-gray-200"
+              }`}
+          >
+            {cat.toUpperCase()}
+          </button>
+        ))}
+      </div>
 
       {/* Main List Table */}
       <div className="bg-white border rounded-xl overflow-hidden shadow-sm">

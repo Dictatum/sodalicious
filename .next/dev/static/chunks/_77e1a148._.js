@@ -1143,11 +1143,48 @@ var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.sign
 function useProducts() {
     _s();
     const [products, setProducts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(true);
+    const fetchProducts = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "useProducts.useCallback[fetchProducts]": async ()=>{
+            try {
+                setLoading(true);
+                const data = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$store$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["api"].getProducts();
+                // Map API fields (stock_quantity -> stock, min_threshold -> minThreshold) for frontend consistency
+                const mapped = data.map({
+                    "useProducts.useCallback[fetchProducts].mapped": (p)=>({
+                            ...p,
+                            stock: Number(p.stock_quantity),
+                            minThreshold: Number(p.min_threshold)
+                        })
+                }["useProducts.useCallback[fetchProducts].mapped"]);
+                setProducts(mapped);
+            } catch (e) {
+                console.error("[useProducts] fetch error", e);
+            } finally{
+                setLoading(false);
+            }
+        }
+    }["useProducts.useCallback[fetchProducts]"], []);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "useProducts.useEffect": ()=>{
+            fetchProducts();
+            // Listen for menu updates
+            const onUpdate = {
+                "useProducts.useEffect.onUpdate": ()=>fetchProducts()
+            }["useProducts.useEffect.onUpdate"];
+            window.addEventListener("menu:update", onUpdate);
+            return ({
+                "useProducts.useEffect": ()=>window.removeEventListener("menu:update", onUpdate)
+            })["useProducts.useEffect"];
+        }
+    }["useProducts.useEffect"], [
+        fetchProducts
+    ]);
     const addProduct = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "useProducts.useCallback[addProduct]": async (product)=>{
             try {
                 await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$store$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["api"].createProduct(product);
-                if ("TURBOPACK compile-time truthy", 1) window.dispatchEvent(new Event("menu:update"));
+                window.dispatchEvent(new Event("menu:update"));
             } catch (e) {
                 console.error("Failed to add product", e);
                 throw e;
@@ -1158,7 +1195,7 @@ function useProducts() {
         "useProducts.useCallback[updateProduct]": async (id, updates)=>{
             try {
                 await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$store$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["api"].updateProduct(id, updates);
-                if ("TURBOPACK compile-time truthy", 1) window.dispatchEvent(new Event("menu:update"));
+                window.dispatchEvent(new Event("menu:update"));
             } catch (e) {
                 console.error("Failed to update product", e);
                 throw e;
@@ -1169,7 +1206,7 @@ function useProducts() {
         "useProducts.useCallback[deleteProduct]": async (id)=>{
             try {
                 await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$store$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["api"].deleteProduct(id);
-                if ("TURBOPACK compile-time truthy", 1) window.dispatchEvent(new Event("menu:update"));
+                window.dispatchEvent(new Event("menu:update"));
             } catch (e) {
                 console.error("Failed to delete product", e);
                 throw e;
@@ -1187,13 +1224,15 @@ function useProducts() {
     ]);
     return {
         products,
+        loading,
         addProduct,
         updateProduct,
         deleteProduct,
-        getLowStockItems
+        getLowStockItems,
+        refetch: fetchProducts
     };
 }
-_s(useProducts, "/1IVXERpIl7Jvo35XHIJQk9vyf8=");
+_s(useProducts, "9XuzSK3kTT4oFT6G9e5NvaSlffI=");
 function useDatabaseProducts(category) {
     _s1();
     const [products, setProducts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
@@ -3549,9 +3588,17 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$cup$2d$soda$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CupSoda$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/cup-soda.js [app-client] (ecmascript) <export default as CupSoda>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mail$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Mail$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/mail.js [app-client] (ecmascript) <export default as Mail>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/lock.js [app-client] (ecmascript) <export default as Lock>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/arrow-right.js [app-client] (ecmascript) <export default as ArrowRight>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield-check.js [app-client] (ecmascript) <export default as ShieldCheck>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$user$2d$round$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__UserCircle2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-user-round.js [app-client] (ecmascript) <export default as UserCircle2>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertCircle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-alert.js [app-client] (ecmascript) <export default as AlertCircle>");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
 ;
 function LoginPanel({ onLogin }) {
     _s();
@@ -3607,148 +3654,329 @@ function LoginPanel({ onLogin }) {
         }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "min-h-screen bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center p-4",
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "bg-card rounded-2xl shadow-2xl p-8 w-full max-w-md border border-border",
-            children: [
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "text-center mb-8",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                            className: "text-4xl font-bold text-foreground mb-2 tracking-tight",
-                            children: "Sodalicious.Co"
-                        }, void 0, false, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 71,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-muted-foreground text-sm font-medium",
-                            children: "Premium POS System"
-                        }, void 0, false, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 72,
-                            columnNumber: 11
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/components/login-panel.tsx",
-                    lineNumber: 70,
-                    columnNumber: 9
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
-                    onSubmit: handleLogin,
-                    className: "space-y-4 mb-8",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                            type: "email",
-                            placeholder: "Email",
-                            value: email,
-                            onChange: (e)=>setEmail(e.target.value),
-                            className: "w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-card text-foreground transition-all",
-                            required: true
-                        }, void 0, false, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 76,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                            type: "password",
-                            placeholder: "Password",
-                            value: password,
-                            onChange: (e)=>setPassword(e.target.value),
-                            className: "w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-card text-foreground transition-all",
-                            required: true
-                        }, void 0, false, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 84,
-                            columnNumber: 11
-                        }, this),
-                        error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm font-medium",
-                            children: error
-                        }, void 0, false, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 94,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                            type: "submit",
-                            disabled: loading,
-                            className: "w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50 transition-all shadow-md hover:shadow-lg",
-                            children: loading ? "Logging in..." : "Login"
-                        }, void 0, false, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 99,
-                            columnNumber: 11
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/components/login-panel.tsx",
-                    lineNumber: 75,
-                    columnNumber: 9
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "space-y-4 pt-4 border-t border-border",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-center text-xs text-muted-foreground font-medium mb-1",
-                            children: "Quick Login (Demo):"
-                        }, void 0, false, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 109,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "grid grid-cols-2 gap-3",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    type: "button",
-                                    onClick: ()=>{
-                                        setEmail("cashier@sodalicious.com");
-                                        setPassword("123456");
-                                    },
-                                    className: "p-2 text-xs border border-primary/20 bg-primary/5 rounded hover:bg-primary/10 transition-colors text-primary font-medium",
-                                    children: "Cashier"
-                                }, void 0, false, {
-                                    fileName: "[project]/components/login-panel.tsx",
-                                    lineNumber: 111,
-                                    columnNumber: 13
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    type: "button",
-                                    onClick: ()=>{
-                                        setEmail("manager@sodalicious.com");
-                                        setPassword("123456");
-                                    },
-                                    className: "p-2 text-xs border border-purple-500/20 bg-purple-500/5 rounded hover:bg-purple-500/10 transition-colors text-purple-600 font-medium",
-                                    children: "Manager"
-                                }, void 0, false, {
-                                    fileName: "[project]/components/login-panel.tsx",
-                                    lineNumber: 121,
-                                    columnNumber: 13
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/components/login-panel.tsx",
-                            lineNumber: 110,
-                            columnNumber: 11
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/components/login-panel.tsx",
-                    lineNumber: 108,
-                    columnNumber: 9
-                }, this)
-            ]
-        }, void 0, true, {
-            fileName: "[project]/components/login-panel.tsx",
-            lineNumber: 69,
-            columnNumber: 7
-        }, this)
-    }, void 0, false, {
+        className: "min-h-screen relative overflow-hidden flex items-center justify-center p-4 bg-[#0a0a0b]",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] animate-pulse"
+            }, void 0, false, {
+                fileName: "[project]/components/login-panel.tsx",
+                lineNumber: 71,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/20 rounded-full blur-[120px] animate-pulse delay-700"
+            }, void 0, false, {
+                fileName: "[project]/components/login-panel.tsx",
+                lineNumber: 72,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "relative z-10 w-full max-w-md",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-2xl p-10 overflow-hidden relative",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "text-center mb-10 relative",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "inline-flex p-4 rounded-3xl bg-primary/10 mb-6 border border-primary/20 ring-4 ring-primary/5",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$cup$2d$soda$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CupSoda$3e$__["CupSoda"], {
+                                            className: "w-10 h-10 text-primary"
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/login-panel.tsx",
+                                            lineNumber: 80,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 79,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                        className: "text-4xl font-black text-white mb-2 tracking-tighter",
+                                        children: [
+                                            "SODALICIOUS",
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-primary",
+                                                children: "."
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 83,
+                                                columnNumber: 26
+                                            }, this),
+                                            "CO"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 82,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-gray-400 text-sm font-medium tracking-wide uppercase",
+                                        children: "Premium Point of Sale"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 85,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/login-panel.tsx",
+                                lineNumber: 78,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
+                                onSubmit: handleLogin,
+                                className: "space-y-5",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "space-y-1.5",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                className: "text-[11px] font-bold text-gray-500 uppercase ml-1 tracking-widest",
+                                                children: "Email Address"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 90,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "relative group",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mail$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Mail$3e$__["Mail"], {
+                                                        className: "absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-primary transition-colors"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 92,
+                                                        columnNumber: 17
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                        type: "email",
+                                                        placeholder: "name@sodalicious.com",
+                                                        value: email,
+                                                        onChange: (e)=>setEmail(e.target.value),
+                                                        className: "w-full pl-12 pr-4 py-4 bg-white/5 border border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-white placeholder:text-gray-600 transition-all font-medium",
+                                                        required: true
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 93,
+                                                        columnNumber: 17
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 91,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 89,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "space-y-1.5",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                className: "text-[11px] font-bold text-gray-500 uppercase ml-1 tracking-widest",
+                                                children: "Security Code"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 105,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "relative group",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__["Lock"], {
+                                                        className: "absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-primary transition-colors"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 107,
+                                                        columnNumber: 17
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                        type: "password",
+                                                        placeholder: "••••••••",
+                                                        value: password,
+                                                        onChange: (e)=>setPassword(e.target.value),
+                                                        className: "w-full pl-12 pr-4 py-4 bg-white/5 border border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-white placeholder:text-gray-600 transition-all font-medium",
+                                                        required: true
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 108,
+                                                        columnNumber: 17
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 106,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 104,
+                                        columnNumber: 13
+                                    }, this),
+                                    error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-500 text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-1",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertCircle$3e$__["AlertCircle"], {
+                                                className: "w-4 h-4"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 121,
+                                                columnNumber: 17
+                                            }, this),
+                                            error
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 120,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        type: "submit",
+                                        disabled: loading,
+                                        className: "w-full relative group overflow-hidden py-4 bg-primary text-primary-foreground rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-primary/90 disabled:opacity-50 transition-all shadow-xl shadow-primary/20 active:scale-95",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "relative z-10 flex items-center justify-center gap-2",
+                                            children: [
+                                                loading ? "Authenticating..." : "Establish Connection",
+                                                !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
+                                                    className: "w-4 h-4 group-hover:translate-x-1 transition-transform"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/login-panel.tsx",
+                                                    lineNumber: 133,
+                                                    columnNumber: 30
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/components/login-panel.tsx",
+                                            lineNumber: 131,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 126,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/login-panel.tsx",
+                                lineNumber: 88,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "mt-10 pt-8 border-t border-white/5",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-center text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-4",
+                                        children: "Diagnostic Entry Points"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 140,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "grid grid-cols-2 gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                type: "button",
+                                                onClick: ()=>{
+                                                    setEmail("cashier@sodalicious.com");
+                                                    setPassword("123456");
+                                                },
+                                                className: "flex items-center justify-center gap-2 px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl hover:bg-white/[0.05] hover:border-white/10 transition-all group",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$user$2d$round$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__UserCircle2$3e$__["UserCircle2"], {
+                                                        className: "w-4 h-4 text-gray-500 group-hover:text-primary transition-colors"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 150,
+                                                        columnNumber: 17
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-[11px] font-bold text-gray-400 group-hover:text-white transition-colors",
+                                                        children: "CASHIER"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 151,
+                                                        columnNumber: 17
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 142,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                type: "button",
+                                                onClick: ()=>{
+                                                    setEmail("manager@sodalicious.com");
+                                                    setPassword("123456");
+                                                },
+                                                className: "flex items-center justify-center gap-2 px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl hover:bg-white/[0.05] hover:border-white/10 transition-all group",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"], {
+                                                        className: "w-4 h-4 text-gray-500 group-hover:text-purple-400 transition-colors"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 161,
+                                                        columnNumber: 17
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-[11px] font-bold text-gray-400 group-hover:text-white transition-colors",
+                                                        children: "MANAGER"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/login-panel.tsx",
+                                                        lineNumber: 162,
+                                                        columnNumber: 17
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/login-panel.tsx",
+                                                lineNumber: 153,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/login-panel.tsx",
+                                        lineNumber: 141,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/login-panel.tsx",
+                                lineNumber: 139,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/login-panel.tsx",
+                        lineNumber: 75,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-center mt-8 text-gray-600 text-[10px] font-medium tracking-widest uppercase",
+                        children: "© 2026 Sodalicious Advanced Agentic Coding Systems"
+                    }, void 0, false, {
+                        fileName: "[project]/components/login-panel.tsx",
+                        lineNumber: 168,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/login-panel.tsx",
+                lineNumber: 74,
+                columnNumber: 7
+            }, this)
+        ]
+    }, void 0, true, {
         fileName: "[project]/components/login-panel.tsx",
-        lineNumber: 68,
+        lineNumber: 69,
         columnNumber: 5
     }, this);
 }
@@ -3791,6 +4019,7 @@ function ProductManagement({ products }) {
     const [editingId, setEditingId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [searchTerm, setSearchTerm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [loadingDetails, setLoadingDetails] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [activeCategory, setActiveCategory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("All");
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({
         name: "",
         category: "Hot Coffee",
@@ -3801,9 +4030,13 @@ function ProductManagement({ products }) {
         size: "M",
         ingredients: []
     });
-    // Derived from menuSync for display list
-    const filteredItems = menuSync.menuItems.filter((item)=>item.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    const noRecipeCount = menuSync.menuItems.filter((item)=>!item.ingredients_list || item.bottleneck_ingredient === 'Recipe Missing').length;
+    // Derived from database products for display list
+    const filteredItems = (products.products || []).filter((item)=>{
+        const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = activeCategory === "All" || item.category === activeCategory;
+        return matchesSearch && matchesCategory;
+    });
+    const noRecipeCount = (products.products || []).filter((item)=>!item.ingredients_list || item.bottleneck_ingredient === 'Recipe Missing').length;
     const handleEdit = async (item)=>{
         setEditingId(String(item.id));
         setLoadingDetails(true);
@@ -3899,7 +4132,7 @@ function ProductManagement({ products }) {
                                 children: "Products"
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/product-management.tsx",
-                                lineNumber: 127,
+                                lineNumber: 130,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3910,7 +4143,7 @@ function ProductManagement({ products }) {
                                         children: "Manage your menu items, stock, and recipes"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/product-management.tsx",
-                                        lineNumber: 129,
+                                        lineNumber: 132,
                                         columnNumber: 13
                                     }, this),
                                     noRecipeCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3920,7 +4153,7 @@ function ProductManagement({ products }) {
                                                 className: "w-3 h-3"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 132,
+                                                lineNumber: 135,
                                                 columnNumber: 17
                                             }, this),
                                             noRecipeCount,
@@ -3928,56 +4161,98 @@ function ProductManagement({ products }) {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/product-management.tsx",
-                                        lineNumber: 131,
+                                        lineNumber: 134,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/manager/product-management.tsx",
-                                lineNumber: 128,
+                                lineNumber: 131,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/product-management.tsx",
-                        lineNumber: 126,
+                        lineNumber: 129,
                         columnNumber: 9
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: ()=>{
-                            setEditingId(null);
-                            setFormData({
-                                name: "",
-                                category: "Hot Coffee",
-                                price: 0,
-                                description: "",
-                                stock_quantity: 0,
-                                min_threshold: 10,
-                                size: "M",
-                                ingredients: []
-                            });
-                            setShowForm(true);
-                        },
-                        className: "flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20",
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex gap-3",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$plus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Plus$3e$__["Plus"], {
-                                className: "w-5 h-5"
-                            }, void 0, false, {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: async ()=>{
+                                    if (confirm("This will regenerate all recipes based on standard patterns. Continue?")) {
+                                        try {
+                                            const res = await fetch("/api/admin/fix-recipes");
+                                            const data = await res.json();
+                                            if (data.success) {
+                                                alert("Recipes repaired successfully!");
+                                                products.refetch();
+                                            } else {
+                                                alert("Failed: " + data.error);
+                                            }
+                                        } catch (e) {
+                                            alert("Error repairing recipes");
+                                        }
+                                    }
+                                },
+                                className: "flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white rounded-lg font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
+                                        className: "w-5 h-5"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/manager/product-management.tsx",
+                                        lineNumber: 161,
+                                        columnNumber: 13
+                                    }, this),
+                                    "Repair Recipes"
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/components/manager/product-management.tsx",
-                                lineNumber: 155,
+                                lineNumber: 142,
                                 columnNumber: 11
                             }, this),
-                            " Add Product"
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>{
+                                    setEditingId(null);
+                                    setFormData({
+                                        name: "",
+                                        category: "Hot Coffee",
+                                        price: 0,
+                                        description: "",
+                                        stock_quantity: 0,
+                                        min_threshold: 10,
+                                        size: "M",
+                                        ingredients: []
+                                    });
+                                    setShowForm(true);
+                                },
+                                className: "flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$plus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Plus$3e$__["Plus"], {
+                                        className: "w-5 h-5"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/manager/product-management.tsx",
+                                        lineNumber: 181,
+                                        columnNumber: 13
+                                    }, this),
+                                    " Add Product"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/manager/product-management.tsx",
+                                lineNumber: 164,
+                                columnNumber: 11
+                            }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/product-management.tsx",
-                        lineNumber: 138,
+                        lineNumber: 141,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/manager/product-management.tsx",
-                lineNumber: 125,
+                lineNumber: 128,
                 columnNumber: 7
             }, this),
             showForm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3995,20 +4270,20 @@ function ProductManagement({ products }) {
                                             className: "w-5 h-5 text-primary"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/product-management.tsx",
-                                            lineNumber: 164,
+                                            lineNumber: 191,
                                             columnNumber: 30
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$plus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Plus$3e$__["Plus"], {
                                             className: "w-5 h-5 text-primary"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/product-management.tsx",
-                                            lineNumber: 164,
+                                            lineNumber: 191,
                                             columnNumber: 74
                                         }, this),
                                         editingId ? "Edit Product" : "New Product"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 163,
+                                    lineNumber: 190,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4018,18 +4293,18 @@ function ProductManagement({ products }) {
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/components/manager/product-management.tsx",
-                                        lineNumber: 167,
+                                        lineNumber: 194,
                                         columnNumber: 105
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 167,
+                                    lineNumber: 194,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/manager/product-management.tsx",
-                            lineNumber: 162,
+                            lineNumber: 189,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4040,12 +4315,12 @@ function ProductManagement({ products }) {
                                     className: "w-8 h-8 animate-spin text-primary"
                                 }, void 0, false, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 172,
+                                    lineNumber: 199,
                                     columnNumber: 59
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/product-management.tsx",
-                                lineNumber: 172,
+                                lineNumber: 199,
                                 columnNumber: 17
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                 children: [
@@ -4060,7 +4335,7 @@ function ProductManagement({ products }) {
                                                         children: "Product Name"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 178,
+                                                        lineNumber: 205,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -4073,13 +4348,13 @@ function ProductManagement({ products }) {
                                                             })
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 179,
+                                                        lineNumber: 206,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 177,
+                                                lineNumber: 204,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4090,7 +4365,7 @@ function ProductManagement({ products }) {
                                                         children: "Category"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 182,
+                                                        lineNumber: 209,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -4105,18 +4380,18 @@ function ProductManagement({ products }) {
                                                                 children: c
                                                             }, c, false, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 184,
+                                                                lineNumber: 211,
                                                                 columnNumber: 88
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 183,
+                                                        lineNumber: 210,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 181,
+                                                lineNumber: 208,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4127,7 +4402,7 @@ function ProductManagement({ products }) {
                                                         children: "Price"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 188,
+                                                        lineNumber: 215,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -4140,13 +4415,13 @@ function ProductManagement({ products }) {
                                                             })
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 189,
+                                                        lineNumber: 216,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 187,
+                                                lineNumber: 214,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4157,7 +4432,7 @@ function ProductManagement({ products }) {
                                                         children: "Description"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 192,
+                                                        lineNumber: 219,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -4170,19 +4445,19 @@ function ProductManagement({ products }) {
                                                             })
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 193,
+                                                        lineNumber: 220,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 191,
+                                                lineNumber: 218,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/product-management.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 203,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4193,7 +4468,7 @@ function ProductManagement({ products }) {
                                                 children: "📦 Stock Management"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 199,
+                                                lineNumber: 226,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4207,7 +4482,7 @@ function ProductManagement({ products }) {
                                                                 children: "Current Stock"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 202,
+                                                                lineNumber: 229,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -4220,13 +4495,13 @@ function ProductManagement({ products }) {
                                                                     })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 203,
+                                                                lineNumber: 230,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 201,
+                                                        lineNumber: 228,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4237,7 +4512,7 @@ function ProductManagement({ products }) {
                                                                 children: "Min. Threshold (Alert Level)"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 206,
+                                                                lineNumber: 233,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -4250,25 +4525,25 @@ function ProductManagement({ products }) {
                                                                     })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 207,
+                                                                lineNumber: 234,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 205,
+                                                        lineNumber: 232,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 200,
+                                                lineNumber: 227,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/product-management.tsx",
-                                        lineNumber: 198,
+                                        lineNumber: 225,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4282,7 +4557,7 @@ function ProductManagement({ products }) {
                                                         children: "🥘 Recipe / Ingredients"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 215,
+                                                        lineNumber: 242,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4291,13 +4566,13 @@ function ProductManagement({ products }) {
                                                         children: "+ Add Ingredient"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 216,
+                                                        lineNumber: 243,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 214,
+                                                lineNumber: 241,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4307,7 +4582,7 @@ function ProductManagement({ products }) {
                                                     children: "No ingredients defined. Add one to create a recipe."
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/manager/product-management.tsx",
-                                                    lineNumber: 221,
+                                                    lineNumber: 248,
                                                     columnNumber: 25
                                                 }, this) : formData.ingredients.map((ing, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "flex gap-3 items-center",
@@ -4322,7 +4597,7 @@ function ProductManagement({ products }) {
                                                                         children: "Select Ingredient"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                                        lineNumber: 230,
+                                                                        lineNumber: 257,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     ingredients.map((i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -4335,13 +4610,13 @@ function ProductManagement({ products }) {
                                                                             ]
                                                                         }, i.id, true, {
                                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                                            lineNumber: 231,
+                                                                            lineNumber: 258,
                                                                             columnNumber: 53
                                                                         }, this))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 225,
+                                                                lineNumber: 252,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -4352,7 +4627,7 @@ function ProductManagement({ products }) {
                                                                 onChange: (e)=>updateIngredientRow(idx, "amount", Number(e.target.value))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 233,
+                                                                lineNumber: 260,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4362,36 +4637,36 @@ function ProductManagement({ products }) {
                                                                     className: "w-4 h-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/manager/product-management.tsx",
-                                                                    lineNumber: 240,
+                                                                    lineNumber: 267,
                                                                     columnNumber: 136
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                                lineNumber: 240,
+                                                                lineNumber: 267,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, idx, true, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 224,
+                                                        lineNumber: 251,
                                                         columnNumber: 27
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 219,
+                                                lineNumber: 246,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/manager/product-management.tsx",
-                                        lineNumber: 213,
+                                        lineNumber: 240,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true)
                         }, void 0, false, {
                             fileName: "[project]/components/manager/product-management.tsx",
-                            lineNumber: 170,
+                            lineNumber: 197,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4403,7 +4678,7 @@ function ProductManagement({ products }) {
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 251,
+                                    lineNumber: 278,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4412,25 +4687,51 @@ function ProductManagement({ products }) {
                                     children: editingId ? "Update Product" : "Create Product"
                                 }, void 0, false, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 252,
+                                    lineNumber: 279,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/manager/product-management.tsx",
-                            lineNumber: 250,
+                            lineNumber: 277,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/manager/product-management.tsx",
-                    lineNumber: 161,
+                    lineNumber: 188,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/manager/product-management.tsx",
-                lineNumber: 160,
+                lineNumber: 187,
                 columnNumber: 9
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex items-center gap-2 overflow-x-auto pb-4 mb-2 no-scrollbar",
+                children: [
+                    "All",
+                    "Hot Coffee",
+                    "Iced Coffee",
+                    "Frappes",
+                    "Soda Series",
+                    "Yakult Series",
+                    "Matcha Series",
+                    "Combo Meals",
+                    "Snacks"
+                ].map((cat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: ()=>setActiveCategory(cat),
+                        className: `px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap transition-all border-2 ${activeCategory === cat ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105" : "bg-white border-gray-100 text-gray-400 hover:border-gray-200"}`,
+                        children: cat.toUpperCase()
+                    }, cat, false, {
+                        fileName: "[project]/components/manager/product-management.tsx",
+                        lineNumber: 288,
+                        columnNumber: 11
+                    }, this))
+            }, void 0, false, {
+                fileName: "[project]/components/manager/product-management.tsx",
+                lineNumber: 286,
+                columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "bg-white border rounded-xl overflow-hidden shadow-sm",
@@ -4444,7 +4745,7 @@ function ProductManagement({ products }) {
                                     className: "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
                                 }, void 0, false, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 262,
+                                    lineNumber: 305,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -4455,18 +4756,18 @@ function ProductManagement({ products }) {
                                     className: "w-full pl-9 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                                 }, void 0, false, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 263,
+                                    lineNumber: 306,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/manager/product-management.tsx",
-                            lineNumber: 261,
+                            lineNumber: 304,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/manager/product-management.tsx",
-                        lineNumber: 260,
+                        lineNumber: 303,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -4481,7 +4782,7 @@ function ProductManagement({ products }) {
                                             children: "Name"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/product-management.tsx",
-                                            lineNumber: 276,
+                                            lineNumber: 319,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -4489,7 +4790,7 @@ function ProductManagement({ products }) {
                                             children: "Information"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/product-management.tsx",
-                                            lineNumber: 277,
+                                            lineNumber: 320,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -4497,7 +4798,7 @@ function ProductManagement({ products }) {
                                             children: "Stock"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/product-management.tsx",
-                                            lineNumber: 278,
+                                            lineNumber: 321,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -4505,7 +4806,7 @@ function ProductManagement({ products }) {
                                             children: "Recipe"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/product-management.tsx",
-                                            lineNumber: 279,
+                                            lineNumber: 322,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -4513,18 +4814,18 @@ function ProductManagement({ products }) {
                                             children: "Actions"
                                         }, void 0, false, {
                                             fileName: "[project]/components/manager/product-management.tsx",
-                                            lineNumber: 280,
+                                            lineNumber: 323,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/manager/product-management.tsx",
-                                    lineNumber: 275,
+                                    lineNumber: 318,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/product-management.tsx",
-                                lineNumber: 274,
+                                lineNumber: 317,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -4537,7 +4838,7 @@ function ProductManagement({ products }) {
                                                 children: item.name
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 286,
+                                                lineNumber: 329,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4550,7 +4851,7 @@ function ProductManagement({ products }) {
                                                             children: item.category
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 289,
+                                                            lineNumber: 332,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4561,18 +4862,18 @@ function ProductManagement({ products }) {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 290,
+                                                            lineNumber: 333,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/manager/product-management.tsx",
-                                                    lineNumber: 288,
+                                                    lineNumber: 331,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 287,
+                                                lineNumber: 330,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4584,7 +4885,7 @@ function ProductManagement({ products }) {
                                                             className: `w-2 h-2 rounded-full ${item.stock < item.minThreshold ? "bg-red-500 animate-pulse" : "bg-green-500"}`
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 295,
+                                                            lineNumber: 338,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4595,18 +4896,18 @@ function ProductManagement({ products }) {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 296,
+                                                            lineNumber: 339,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/manager/product-management.tsx",
-                                                    lineNumber: 294,
+                                                    lineNumber: 337,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 293,
+                                                lineNumber: 336,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4618,12 +4919,12 @@ function ProductManagement({ products }) {
                                                             children: ing
                                                         }, ing, false, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 303,
+                                                            lineNumber: 346,
                                                             columnNumber: 25
                                                         }, this))
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/manager/product-management.tsx",
-                                                    lineNumber: 301,
+                                                    lineNumber: 344,
                                                     columnNumber: 21
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "text-[10px] font-black text-rose-500 bg-rose-50 px-2 py-1 rounded border border-rose-100 flex items-center gap-1 w-fit",
@@ -4632,19 +4933,19 @@ function ProductManagement({ products }) {
                                                             className: "w-3 h-3"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 310,
+                                                            lineNumber: 353,
                                                             columnNumber: 23
                                                         }, this),
                                                         " NO RECIPE"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/manager/product-management.tsx",
-                                                    lineNumber: 309,
+                                                    lineNumber: 352,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 299,
+                                                lineNumber: 342,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4657,12 +4958,12 @@ function ProductManagement({ products }) {
                                                             className: "w-4 h-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 315,
+                                                            lineNumber: 358,
                                                             columnNumber: 118
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 315,
+                                                        lineNumber: 358,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4672,51 +4973,51 @@ function ProductManagement({ products }) {
                                                             className: "w-4 h-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/manager/product-management.tsx",
-                                                            lineNumber: 316,
+                                                            lineNumber: 359,
                                                             columnNumber: 121
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/manager/product-management.tsx",
-                                                        lineNumber: 316,
+                                                        lineNumber: 359,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/manager/product-management.tsx",
-                                                lineNumber: 314,
+                                                lineNumber: 357,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, item.id, true, {
                                         fileName: "[project]/components/manager/product-management.tsx",
-                                        lineNumber: 285,
+                                        lineNumber: 328,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/manager/product-management.tsx",
-                                lineNumber: 283,
+                                lineNumber: 326,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/manager/product-management.tsx",
-                        lineNumber: 273,
+                        lineNumber: 316,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/manager/product-management.tsx",
-                lineNumber: 259,
+                lineNumber: 302,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/manager/product-management.tsx",
-        lineNumber: 124,
+        lineNumber: 127,
         columnNumber: 5
     }, this);
 }
-_s(ProductManagement, "EldI6ov4XYOqzJHEf3fqq5JkUNQ=", false, function() {
+_s(ProductManagement, "5QMK3MKiNGR0ce9Pox2GQH0bbRk=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMenuSync"],
         __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useIngredients"]

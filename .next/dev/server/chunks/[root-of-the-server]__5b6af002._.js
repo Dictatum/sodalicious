@@ -171,100 +171,51 @@ const mod = __turbopack_context__.x("next/dist/server/app-render/after-task-asyn
 
 module.exports = mod;
 }),
-"[project]/app/api/products/[id]/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
+"[project]/app/api/users/[id]/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
     "DELETE",
     ()=>DELETE,
-    "GET",
-    ()=>GET,
     "PUT",
     ()=>PUT
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/db.ts [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/bcryptjs/index.js [app-route] (ecmascript)");
 ;
 ;
-async function GET(request, { params }) {
-    try {
-        const { id } = await params;
-        console.log("[Product API] Fetching ID:", id);
-        // 1. Fetch Product
-        const productResult = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT * FROM products WHERE id = ${id}`;
-        console.log("[Product API] Result count:", productResult.length);
-        if (productResult.length === 0) {
-            console.log("[Product API] Product not found");
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: "Product not found"
-            }, {
-                status: 404
-            });
-        }
-        const product = productResult[0];
-        console.log("[Product API] Product found:", product.name, product.price);
-        // 2. Fetch Ingredients (Recipe)
-        const ingredients = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-      SELECT 
-        pi.ingredient_id, 
-        i.name, 
-        i.unit, 
-        pi.amount 
-      FROM product_ingredients pi
-      JOIN ingredients i ON pi.ingredient_id = i.id
-      WHERE pi.product_id = ${id}
-    `;
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            ...product,
-            ingredients
-        });
-    } catch (error) {
-        console.error("[Product API] GET error:", error);
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to fetch product"
-        }, {
-            status: 500
-        });
-    }
-}
+;
 async function PUT(request, { params }) {
     try {
-        const { id } = await params;
+        const { id } = params;
         const body = await request.json();
-        const { name, category, price, description, stock_quantity, min_threshold, ingredients } = body;
-        // 1. Update Product
-        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-      UPDATE products 
-      SET 
-        name = ${name}, 
-        category = ${category}, 
-        price = ${price}, 
-        description = ${description},
-        stock_quantity = ${stock_quantity}, 
-        min_threshold = ${min_threshold}
-      WHERE id = ${id}
-    `;
-        // 2. Update Ingredients (Recipe)
-        // First, delete existing
-        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`DELETE FROM product_ingredients WHERE product_id = ${id}`;
-        // Then insert new if any
-        if (ingredients && Array.isArray(ingredients) && ingredients.length > 0) {
-            for (const ing of ingredients){
-                if (ing.ingredient_id && ing.amount > 0) {
-                    await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-            INSERT INTO product_ingredients (product_id, ingredient_id, amount)
-            VALUES (${id}, ${ing.ingredient_id}, ${ing.amount})
-          `;
-                }
-            }
+        const { name, username, password, role, status } = body;
+        const isActive = status === 'Active';
+        // Build update query dynamically based almost on fields present? 
+        // For simplicity, we assume full update or patch
+        if (password) {
+            const passwordHash = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].hash(password, 10);
+            await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+            UPDATE users 
+            SET name=${name}, email=${username}, password_hash=${passwordHash}, role=${role}, is_active=${isActive}
+            WHERE id=${id}
+        `;
+        } else {
+            await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+            UPDATE users 
+            SET name=${name}, email=${username}, role=${role}, is_active=${isActive}
+            WHERE id=${id}
+        `;
         }
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            success: true
+            success: true,
+            id
         });
     } catch (error) {
-        console.error("[Product API] PUT error:", error);
+        console.error("Failed to update user:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to update product"
+            error: "Failed to update user"
         }, {
             status: 500
         });
@@ -272,17 +223,15 @@ async function PUT(request, { params }) {
 }
 async function DELETE(request, { params }) {
     try {
-        const { id } = await params;
-        // Cascade delete should handle ingredients, but we can be explicit if needed.
-        // Schema says ON DELETE CASCADE, so deleting product is enough.
-        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`DELETE FROM products WHERE id = ${id}`;
+        const { id } = params;
+        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`DELETE FROM users WHERE id=${id}`;
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true
         });
     } catch (error) {
-        console.error("[Product API] DELETE error:", error);
+        console.error("Failed to delete user:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to delete product"
+            error: "Failed to delete user"
         }, {
             status: 500
         });
@@ -291,4 +240,4 @@ async function DELETE(request, { params }) {
 }),
 ];
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__e1b5881d._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__5b6af002._.js.map

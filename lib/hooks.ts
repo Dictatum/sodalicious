@@ -17,11 +17,38 @@ import { COMPLETE_MENU, getAllProductVariants, MENU_CATEGORIES, getBaseMenuItems
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await api.getProducts()
+      // Map API fields (stock_quantity -> stock, min_threshold -> minThreshold) for frontend consistency
+      const mapped = data.map((p: any) => ({
+        ...p,
+        stock: Number(p.stock_quantity),
+        minThreshold: Number(p.min_threshold)
+      }));
+      setProducts(mapped)
+    } catch (e) {
+      console.error("[useProducts] fetch error", e)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchProducts()
+    // Listen for menu updates
+    const onUpdate = () => fetchProducts()
+    window.addEventListener("menu:update", onUpdate)
+    return () => window.removeEventListener("menu:update", onUpdate)
+  }, [fetchProducts])
 
   const addProduct = useCallback(async (product: Omit<Product, "id">) => {
     try {
       await api.createProduct(product)
-      if (typeof window !== "undefined") window.dispatchEvent(new Event("menu:update"))
+      window.dispatchEvent(new Event("menu:update"))
     } catch (e) {
       console.error("Failed to add product", e)
       throw e
@@ -31,7 +58,7 @@ export function useProducts() {
   const updateProduct = useCallback(async (id: number, updates: Partial<Product>) => {
     try {
       await api.updateProduct(id, updates)
-      if (typeof window !== "undefined") window.dispatchEvent(new Event("menu:update"))
+      window.dispatchEvent(new Event("menu:update"))
     } catch (e) {
       console.error("Failed to update product", e)
       throw e
@@ -41,7 +68,7 @@ export function useProducts() {
   const deleteProduct = useCallback(async (id: number) => {
     try {
       await api.deleteProduct(id)
-      if (typeof window !== "undefined") window.dispatchEvent(new Event("menu:update"))
+      window.dispatchEvent(new Event("menu:update"))
     } catch (e) {
       console.error("Failed to delete product", e)
       throw e
@@ -52,7 +79,7 @@ export function useProducts() {
     return products.filter((p) => p.stock <= p.minThreshold)
   }, [products])
 
-  return { products, addProduct, updateProduct, deleteProduct, getLowStockItems }
+  return { products, loading, addProduct, updateProduct, deleteProduct, getLowStockItems, refetch: fetchProducts }
 }
 
 export function useDatabaseProducts(category?: string) {
