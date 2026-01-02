@@ -16,30 +16,37 @@ import type { Order as DBOrder } from "./db"
 import { COMPLETE_MENU, getAllProductVariants, MENU_CATEGORIES, getBaseMenuItems } from "./menu-data"
 
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>(mockProducts)
+  const [products, setProducts] = useState<Product[]>([])
 
-  const addProduct = useCallback(
-    (product: Omit<Product, "id">) => {
-      const newProduct = { ...product, id: Math.max(...products.map((p) => Number(p.id)), 0) + 1 }
-      setProducts([...products, newProduct])
-      return newProduct
-    },
-    [products],
-  )
+  const addProduct = useCallback(async (product: Omit<Product, "id">) => {
+    try {
+      await api.createProduct(product)
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("menu:update"))
+    } catch (e) {
+      console.error("Failed to add product", e)
+      throw e
+    }
+  }, [])
 
-  const updateProduct = useCallback(
-    (id: number, updates: Partial<Product>) => {
-      setProducts(products.map((p) => (p.id === id ? { ...p, ...updates } : p)))
-    },
-    [products],
-  )
+  const updateProduct = useCallback(async (id: number, updates: Partial<Product>) => {
+    try {
+      await api.updateProduct(id, updates)
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("menu:update"))
+    } catch (e) {
+      console.error("Failed to update product", e)
+      throw e
+    }
+  }, [])
 
-  const deleteProduct = useCallback(
-    (id: number) => {
-      setProducts(products.filter((p) => p.id !== id))
-    },
-    [products],
-  )
+  const deleteProduct = useCallback(async (id: number) => {
+    try {
+      await api.deleteProduct(id)
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("menu:update"))
+    } catch (e) {
+      console.error("Failed to delete product", e)
+      throw e
+    }
+  }, [])
 
   const getLowStockItems = useCallback(() => {
     return products.filter((p) => p.stock <= p.minThreshold)
@@ -363,8 +370,13 @@ export function useMenuSync() {
           const dbItem = dataMap.get(mi.name)
           return {
             ...mi,
-            // If DB has stock, use it. Otherwise keep local.
+            // Sync fields from DB if available (Source of Truth)
+            id: dbItem ? dbItem.id : mi.id,
+            price: dbItem ? Number(dbItem.price) : (mi.sizes?.[0]?.price || 0),
+            category: dbItem ? dbItem.category : mi.category,
+            description: dbItem ? dbItem.description : mi.description,
             stock: dbItem ? Number(dbItem.stock_quantity) : mi.stock,
+            minThreshold: dbItem ? Number(dbItem.min_threshold) : mi.minThreshold,
             bottleneck_ingredient: dbItem?.bottleneck_ingredient,
             ingredients_list: dbItem?.ingredients_list
           }
@@ -409,6 +421,7 @@ export function useMenuSync() {
     getAllCategories,
     getCategoryEmoji,
     getLowStockItems,
+    refetch: fetchStock,
     refresh: fetchStock,
   }
 }

@@ -58,14 +58,19 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
 
   const handleSizeSelect = (size: any) => {
     if (selectedItem) {
+      // Check stock limit before adding
+      if (selectedItem.stock <= 0) return
+
       const cartItemId = `${selectedItem.id}-${size.size}`
       const existing = cart.find((c) => c.id === cartItemId)
 
       if (existing) {
+        if (existing.quantity + 1 > selectedItem.stock) return
         setCart(cart.map((c) =>
           c.id === cartItemId ? { ...c, quantity: c.quantity + 1 } : c
         ))
       } else {
+        if (1 > selectedItem.stock) return
         setCart([
           ...cart,
           {
@@ -91,6 +96,14 @@ export default function CashierPanel({ onLogout, currentUser }: CashierPanelProp
     if (quantity <= 0) {
       removeFromCart(cartItemId)
     } else {
+      // Check stock limit
+      const item = cart.find(c => c.id === cartItemId)
+      if (item) {
+        const product = menuSync.getMenuItemById(String(item.productId))
+        if (product && quantity > product.stock) {
+          return
+        }
+      }
       setCart(cart.map((c) => (c.id === cartItemId ? { ...c, quantity } : c)))
     }
   }

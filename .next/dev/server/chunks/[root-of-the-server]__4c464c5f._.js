@@ -244,9 +244,10 @@ async function POST(request) {
         console.log(`[Inventory API] Updating ${ingredient.name}: ${previousQuantity} -> ${newQuantity}`);
         await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`UPDATE ingredients SET stock_quantity = ${newQuantity} WHERE id = ${ingredient.id}`;
         // 4. Log the change
+        // 4. Log the change
         await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-      INSERT INTO inventory_logs (ingredient_id, user_id, log_type, quantity_changed, reason, previous_quantity, new_quantity) 
-      VALUES (${ingredient.id}, ${validUserId}, ${log_type}, ${quantity_changed}, ${reason || 'Manual Adjustment'}, ${previousQuantity}, ${newQuantity})
+      INSERT INTO inventory_logs (ingredient_id, user_id, log_type, quantity_changed, reason) 
+      VALUES (${ingredient.id}, ${validUserId}, ${log_type}, ${quantity_changed}, ${reason || 'Manual Adjustment'})
     `;
         console.log(`[Inventory API] ✓ Stock updated and logged.`);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({

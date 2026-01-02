@@ -52,16 +52,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, category, price, description, ingredients } = await request.json()
+    const { name, category, price, description, stock_quantity, min_threshold, ingredients } = await request.json()
 
     // 1. Insert Product
     const result = await sql`
-      INSERT INTO products (name, category, price, description) 
-      VALUES (${name}, ${category}, ${price}, ${description}) 
-      RETURNING id, name
+      INSERT INTO products (name, category, price, description, stock_quantity, min_threshold) 
+      VALUES (${name}, ${category}, ${price}, ${description}, ${stock_quantity || 0}, ${min_threshold || 10}) 
     `
 
-    const productId = result[0].insertId || result[0].id // Handle mysql/pg difference if any, though usually insertId for mysql
+    // For mysql2, result is ResultSetHeader which has insertId property.
+    // However, the sql wrapper returns [rows] = await conn.query, so 'result' IS the ResultSetHeader object.
+    const productId = (result as any).insertId
 
     // 2. Insert Ingredients
     if (ingredients && Array.isArray(ingredients) && ingredients.length > 0 && productId) {

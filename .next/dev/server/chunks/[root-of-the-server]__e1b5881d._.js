@@ -171,97 +171,114 @@ const mod = __turbopack_context__.x("next/dist/server/app-render/after-task-asyn
 
 module.exports = mod;
 }),
-"[project]/app/api/products/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
+"[project]/app/api/products/[id]/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
+    "DELETE",
+    ()=>DELETE,
     "GET",
     ()=>GET,
-    "POST",
-    ()=>POST
+    "PUT",
+    ()=>PUT
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/db.ts [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 ;
 ;
-async function GET(request) {
+async function GET(request, { params }) {
     try {
-        const searchParams = request.nextUrl.searchParams;
-        const categoryName = searchParams.get("category");
-        // Construct query without nested template literals
-        const productsResult = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-      SELECT 
-        p.id, p.name, p.category, p.price, p.description, p.is_active, p.created_at, p.updated_at,
-        p.stock_quantity,
-        COALESCE(
-          (
-            SELECT i2.name 
-            FROM product_ingredients pi2 
-            JOIN ingredients i2 ON pi2.ingredient_id = i2.id 
-            WHERE pi2.product_id = p.id 
-            ORDER BY (i2.stock_quantity / pi2.amount) ASC 
-            LIMIT 1
-          ),
-          'Recipe Missing'
-        ) as bottleneck_ingredient,
-        (
-          SELECT GROUP_CONCAT(CONCAT(i3.name, ' (', pi3.amount, i3.unit, ')') SEPARATOR ', ')
-          FROM product_ingredients pi3
-          JOIN ingredients i3 ON pi3.ingredient_id = i3.id
-          WHERE pi3.product_id = p.id
-        ) as ingredients_list
-      FROM products p
-      LEFT JOIN product_ingredients pi ON p.id = pi.product_id
-      LEFT JOIN ingredients i ON pi.ingredient_id = i.id
-      WHERE p.is_active = true
-      GROUP BY p.id
-      ORDER BY p.name
-    `;
-        // Manual filtering for category if provided (since nested SQL tags are tricky with our current wrapper)
-        let filtered = productsResult;
-        if (categoryName && categoryName !== "All") {
-            filtered = productsResult.filter((p)=>p.category === categoryName);
+        const { id } = await params;
+        // 1. Fetch Product
+        const productResult = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT * FROM products WHERE id = ${id}`;
+        if (productResult.length === 0) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: "Product not found"
+            }, {
+                status: 404
+            });
         }
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(filtered);
-    } catch (error) {
-        console.error("[Products] GET error:", error);
+        const product = productResult[0];
+        // 2. Fetch Ingredients (Recipe)
+        const ingredients = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+      SELECT 
+        pi.ingredient_id, 
+        i.name, 
+        i.unit, 
+        pi.amount 
+      FROM product_ingredients pi
+      JOIN ingredients i ON pi.ingredient_id = i.id
+      WHERE pi.product_id = ${id}
+    `;
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to fetch products"
+            ...product,
+            ingredients
+        });
+    } catch (error) {
+        console.error("[Product API] GET error:", error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: "Failed to fetch product"
         }, {
             status: 500
         });
     }
 }
-async function POST(request) {
+async function PUT(request, { params }) {
     try {
-        const { name, category, price, description, stock_quantity, min_threshold, ingredients } = await request.json();
-        // 1. Insert Product
-        const result = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-      INSERT INTO products (name, category, price, description, stock_quantity, min_threshold) 
-      VALUES (${name}, ${category}, ${price}, ${description}, ${stock_quantity || 0}, ${min_threshold || 10}) 
+        const { id } = await params;
+        const body = await request.json();
+        const { name, category, price, description, stock_quantity, min_threshold, ingredients } = body;
+        // 1. Update Product
+        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+      UPDATE products 
+      SET 
+        name = ${name}, 
+        category = ${category}, 
+        price = ${price}, 
+        description = ${description},
+        stock_quantity = ${stock_quantity}, 
+        min_threshold = ${min_threshold}
+      WHERE id = ${id}
     `;
-        // For mysql2, result is ResultSetHeader which has insertId property.
-        // However, the sql wrapper returns [rows] = await conn.query, so 'result' IS the ResultSetHeader object.
-        const productId = result.insertId;
-        // 2. Insert Ingredients
-        if (ingredients && Array.isArray(ingredients) && ingredients.length > 0 && productId) {
+        // 2. Update Ingredients (Recipe)
+        // First, delete existing
+        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`DELETE FROM product_ingredients WHERE product_id = ${id}`;
+        // Then insert new if any
+        if (ingredients && Array.isArray(ingredients) && ingredients.length > 0) {
             for (const ing of ingredients){
-                await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-          INSERT INTO product_ingredients (product_id, ingredient_id, amount)
-          VALUES (${productId}, ${ing.ingredient_id}, ${ing.amount})
-        `;
+                if (ing.ingredient_id && ing.amount > 0) {
+                    await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+            INSERT INTO product_ingredients (product_id, ingredient_id, amount)
+            VALUES (${id}, ${ing.ingredient_id}, ${ing.amount})
+          `;
+                }
             }
         }
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            success: true,
-            id: productId
-        }, {
-            status: 201
+            success: true
         });
     } catch (error) {
-        console.error("[v0] Products POST error:", error);
+        console.error("[Product API] PUT error:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to create product"
+            error: "Failed to update product"
+        }, {
+            status: 500
+        });
+    }
+}
+async function DELETE(request, { params }) {
+    try {
+        const { id } = await params;
+        // Cascade delete should handle ingredients, but we can be explicit if needed.
+        // Schema says ON DELETE CASCADE, so deleting product is enough.
+        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`DELETE FROM products WHERE id = ${id}`;
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            success: true
+        });
+    } catch (error) {
+        console.error("[Product API] DELETE error:", error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: "Failed to delete product"
         }, {
             status: 500
         });
@@ -270,4 +287,4 @@ async function POST(request) {
 }),
 ];
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__95139a7c._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__e1b5881d._.js.map
