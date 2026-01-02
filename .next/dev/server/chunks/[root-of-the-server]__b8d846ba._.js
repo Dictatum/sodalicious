@@ -146,8 +146,16 @@ if (isPostgres) {
             for(let i = 0; i < values.length; i++){
                 query += "?" + strings[i + 1];
             }
+            // DEBUG LOGGING
+            if ("TURBOPACK compile-time truthy", 1) {
+                console.log(`[DB] Query: ${query.trim().replace(/\s+/g, ' ')}`);
+                if (values.length > 0) console.log(`[DB] Values:`, values);
+            }
             const [rows] = await connection.query(query, values);
             return rows;
+        } catch (err) {
+            console.error(`[DB ERROR] Query failed:`, err);
+            throw err;
         } finally{
             connection.release();
         }
@@ -187,7 +195,7 @@ async function GET(request) {
     `;
         return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(logs);
     } catch (error) {
-        console.error("[v0] Inventory GET error:", error);
+        console.error("[Inventory API] GET error:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             error: "Failed to fetch inventory logs"
         }, {
@@ -196,69 +204,61 @@ async function GET(request) {
     }
 }
 async function POST(request) {
+    console.log("[Inventory API] Incoming adjustment request");
     try {
-        const { ingredient_id, user_id, log_type, quantity_changed, reason } = await request.json();
+        const body = await request.json();
+        const { ingredient_id, user_id, log_type, quantity_changed, reason } = body;
+        if (!ingredient_id) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: "Ingredient ID is required"
+            }, {
+                status: 400
+            });
+        }
         // 1. Get current stock
-        let ingredientResult = [];
-        // Try numeric ID lookup
-        if (!Number.isNaN(Number(ingredient_id))) {
-            const byId = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id, name, stock_quantity FROM ingredients WHERE id = ${Number(ingredient_id)}`;
-            if (byId.length > 0) ingredientResult = byId;
-        }
-        if (ingredientResult.length === 0) {
-            // Fallback: name
-            const byName = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id, name, stock_quantity FROM ingredients WHERE name = ${String(ingredient_id)} LIMIT 1`;
-            if (byName.length > 0) ingredientResult = byName;
-        }
-        if (ingredientResult.length === 0) {
-            console.error(`[Inventory] Ingredient not found with ID/name: ${ingredient_id}`);
+        let ingredient = null;
+        const ingredients = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id, name, stock_quantity FROM ingredients WHERE id = ${ingredient_id} OR name = ${String(ingredient_id)} LIMIT 1`;
+        if (ingredients && ingredients.length > 0) {
+            ingredient = ingredients[0];
+        } else {
+            console.error(`[Inventory API] Ingredient not found: ${ingredient_id}`);
             return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "Ingredient not found"
             }, {
                 status: 404
             });
         }
-        const previousQuantity = ingredientResult[0].stock_quantity;
-        const newQuantity = Number(previousQuantity) + Number(quantity_changed);
-        // 2. Update stock in DB
-        await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`UPDATE ingredients SET stock_quantity = ${newQuantity} WHERE id = ${ingredientResult[0].id}`;
-        // 3. Log the change
-        const insertResult = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-      INSERT INTO inventory_logs (ingredient_id, user_id, log_type, quantity_changed, reason, previous_quantity, new_quantity) 
-      VALUES (${ingredientResult[0].id}, ${user_id}, ${log_type}, ${quantity_changed}, ${reason}, ${previousQuantity}, ${newQuantity})
-    `;
-        // Normalize result
-        let logRow = null;
-        if (insertResult && typeof insertResult.insertId === "number") {
-            const sel = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-         SELECT il.*, i.name as ingredient_name, u.name as user_name 
-         FROM inventory_logs il 
-         LEFT JOIN ingredients i ON il.ingredient_id = i.id 
-         LEFT JOIN users u ON il.user_id = u.id 
-         WHERE il.id = ${insertResult.insertId} LIMIT 1
-       `;
-            if (Array.isArray(sel)) logRow = sel[0];
-            else logRow = sel;
-        } else {
-            // Fallback
-            const sel = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
-         SELECT il.*, i.name as ingredient_name, u.name as user_name 
-         FROM inventory_logs il 
-         LEFT JOIN ingredients i ON il.ingredient_id = i.id 
-         LEFT JOIN users u ON il.user_id = u.id 
-         WHERE il.ingredient_id = ${ingredientResult[0].id} 
-         ORDER BY il.created_at DESC LIMIT 1
-       `;
-            if (Array.isArray(sel)) logRow = sel[0];
-            else logRow = sel;
+        const previousQuantity = Number(ingredient.stock_quantity);
+        const newQuantity = previousQuantity + Number(quantity_changed);
+        // 2. Determine valid user_id (fallback to first available manager/cashier if needed)
+        let validUserId = null;
+        if (user_id && !isNaN(Number(user_id))) {
+            const userCheck = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id FROM users WHERE id = ${Number(user_id)} LIMIT 1`;
+            if (userCheck.length > 0) validUserId = userCheck[0].id;
         }
-        return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(logRow, {
+        if (!validUserId) {
+            const fallback = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`SELECT id FROM users LIMIT 1`;
+            if (fallback.length > 0) validUserId = fallback[0].id;
+        }
+        // 3. Update stock in DB
+        console.log(`[Inventory API] Updating ${ingredient.name}: ${previousQuantity} -> ${newQuantity}`);
+        await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`UPDATE ingredients SET stock_quantity = ${newQuantity} WHERE id = ${ingredient.id}`;
+        // 4. Log the change
+        await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
+      INSERT INTO inventory_logs (ingredient_id, user_id, log_type, quantity_changed, reason, previous_quantity, new_quantity) 
+      VALUES (${ingredient.id}, ${validUserId}, ${log_type}, ${quantity_changed}, ${reason || 'Manual Adjustment'}, ${previousQuantity}, ${newQuantity})
+    `;
+        console.log(`[Inventory API] ✓ Stock updated and logged.`);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            success: true,
+            newQuantity
+        }, {
             status: 201
         });
     } catch (error) {
-        console.error("[Inventory] POST error:", error);
+        console.error("[Inventory API] ❌ POST error:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to log inventory change"
+            error: "Internal Server Error"
         }, {
             status: 500
         });

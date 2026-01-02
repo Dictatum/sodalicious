@@ -146,8 +146,16 @@ if (isPostgres) {
             for(let i = 0; i < values.length; i++){
                 query += "?" + strings[i + 1];
             }
+            // DEBUG LOGGING
+            if ("TURBOPACK compile-time truthy", 1) {
+                console.log(`[DB] Query: ${query.trim().replace(/\s+/g, ' ')}`);
+                if (values.length > 0) console.log(`[DB] Values:`, values);
+            }
             const [rows] = await connection.query(query, values);
             return rows;
+        } catch (err) {
+            console.error(`[DB ERROR] Query failed:`, err);
+            throw err;
         } finally{
             connection.release();
         }
@@ -179,52 +187,44 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$
 async function GET(request) {
     try {
         const searchParams = request.nextUrl.searchParams;
-        const category = searchParams.get("category");
-        // Calculate theoretical stock based on limiting ingredient
-        // If no ingredients, stock is 0.
-        const query = `
-      SELECT 
-        p.id, p.name, p.category, p.price, p.description, p.is_active, p.created_at, p.updated_at,
-        COALESCE(MIN(FLOOR(i.stock_quantity / pi.amount)), 0) as stock_quantity,
-        (
-          SELECT JSON_ARRAYAGG(
-            JSON_OBJECT('ingredient_id', pi2.ingredient_id, 'amount', pi2.amount, 'name', i2.name, 'unit', i2.unit)
-          )
-          FROM product_ingredients pi2
-          JOIN ingredients i2 ON pi2.ingredient_id = i2.id
-          WHERE pi2.product_id = p.id
-        ) as ingredients
-      FROM products p
-      LEFT JOIN product_ingredients pi ON p.id = pi.product_id
-      LEFT JOIN ingredients i ON pi.ingredient_id = i.id
-      WHERE p.is_active = true ${category ? `AND p.category = '${category}'` : ""}
-      GROUP BY p.id
-      ORDER BY p.name
-    `;
-        const products = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"].query(query);
-        // mysql2 returns [rows, fields], but the sql wrapper might return just rows.
-        // Based on previous file content, 'sql' is imported from '@/lib/db' which likely returns array directly or exposes .query
-        // Let's stick to the tagged template literal style if possible, but for complex query with subselects strings might be safer if the tag doesn't support it well.
-        // Actually, checking previous usage: await sql`...`
-        // Attempting raw string query with the previous sql tag might be tricky if it strictly expects template literals.
-        // Let's try to compose it carefully.
+        const categoryName = searchParams.get("category");
+        // Construct query without nested template literals
         const productsResult = await __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`
       SELECT 
         p.id, p.name, p.category, p.price, p.description, p.is_active, p.created_at, p.updated_at,
-        COALESCE(MIN(FLOOR(i.stock_quantity / pi.amount)), 0) as stock_quantity
+        COALESCE(MIN(FLOOR(i.stock_quantity / pi.amount)), 0) as stock_quantity,
+        COALESCE(
+          (
+            SELECT i2.name 
+            FROM product_ingredients pi2 
+            JOIN ingredients i2 ON pi2.ingredient_id = i2.id 
+            WHERE pi2.product_id = p.id 
+            ORDER BY (i2.stock_quantity / pi2.amount) ASC 
+            LIMIT 1
+          ),
+          'Recipe Missing'
+        ) as bottleneck_ingredient,
+        (
+          SELECT GROUP_CONCAT(CONCAT(i3.name, ' (', pi3.amount, i3.unit, ')') SEPARATOR ', ')
+          FROM product_ingredients pi3
+          JOIN ingredients i3 ON pi3.ingredient_id = i3.id
+          WHERE pi3.product_id = p.id
+        ) as ingredients_list
       FROM products p
       LEFT JOIN product_ingredients pi ON p.id = pi.product_id
       LEFT JOIN ingredients i ON pi.ingredient_id = i.id
-      WHERE p.is_active = true ${category ? __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]`AND p.category = ${category}` : __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["sql"]``}
+      WHERE p.is_active = true
       GROUP BY p.id
       ORDER BY p.name
     `;
-        // Note: fetching ingredients details in list view might be heavy, let's skip for list view unless needed.
-        // The user wants to see ingredients, so maybe we fetch them?
-        // Let's just return the products with calculated stock for now.
-        return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(productsResult);
+        // Manual filtering for category if provided (since nested SQL tags are tricky with our current wrapper)
+        let filtered = productsResult;
+        if (categoryName && categoryName !== "All") {
+            filtered = productsResult.filter((p)=>p.category === categoryName);
+        }
+        return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(filtered);
     } catch (error) {
-        console.error("[v0] Products GET error:", error);
+        console.error("[Products] GET error:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$sodalicious$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             error: "Failed to fetch products"
         }, {

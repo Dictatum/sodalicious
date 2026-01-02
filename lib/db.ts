@@ -34,8 +34,18 @@ if (isPostgres) {
       for (let i = 0; i < values.length; i++) {
         query += "?" + strings[i + 1]
       }
+
+      // DEBUG LOGGING
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[DB] Query: ${query.trim().replace(/\s+/g, ' ')}`)
+        if (values.length > 0) console.log(`[DB] Values:`, values)
+      }
+
       const [rows] = await connection.query(query, values)
       return rows
+    } catch (err) {
+      console.error(`[DB ERROR] Query failed:`, err)
+      throw err
     } finally {
       connection.release()
     }

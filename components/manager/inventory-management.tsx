@@ -125,35 +125,40 @@ export default function InventoryManagement({ products, inventoryLogs }: Invento
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {ingredients.map((item) => (
-              <tr key={item.id} className="hover:bg-accent/50">
-                <td className="px-6 py-4 font-medium">{item.name}</td>
-                <td className="px-6 py-4">{item.unit}</td>
-                <td className={`px-6 py-4 font-bold ${Number(item.stock_quantity) <= Number(item.reorder_level) ? "text-red-600" : "text-foreground"}`}>
-                  {item.stock_quantity}
-                </td>
-                <td className="px-6 py-4">{item.reorder_level}</td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-3 py-1 rounded text-sm font-bold ${Number(item.stock_quantity) <= Number(item.reorder_level) ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"
-                      }`}
-                  >
-                    {Number(item.stock_quantity) <= Number(item.reorder_level) ? "Low" : "OK"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => {
-                      setAdjustingId(item.id)
-                      setShowAdjustForm(true)
-                    }}
-                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"
-                  >
-                    Adjust
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {ingredients.map((item) => {
+              const isLow = Number(item.stock_quantity) <= Number(item.reorder_level)
+              return (
+                <tr key={item.id} className={`hover:bg-accent/50 transition-colors ${isLow ? "bg-red-50" : ""}`}>
+                  <td className="px-6 py-4 font-medium">{item.name}</td>
+                  <td className="px-6 py-4">{item.unit}</td>
+                  <td className={`px-6 py-4 font-bold ${isLow ? "text-red-600" : "text-foreground"}`}>
+                    {item.stock_quantity}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-muted-foreground">{item.reorder_level}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isLow
+                        ? "bg-red-600 text-white shadow-lg shadow-red-200"
+                        : "bg-green-100 text-green-700"
+                        }`}
+                    >
+                      {isLow ? "LOW STOCK" : "OK"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => {
+                        setAdjustingId(item.id)
+                        setShowAdjustForm(true)
+                      }}
+                      className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-bold"
+                    >
+                      Adjust
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

@@ -1,0 +1,11 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/auth/logout/route.js")
+R.c("server/chunks/bf122_next_c02d324f._.js")
+R.c("server/chunks/bf122_@neondatabase_serverless_index_mjs_962a465a._.js")
+R.c("server/chunks/bf122_mysql2_bb4c3245._.js")
+R.c("server/chunks/bf122_iconv-lite_590f5787._.js")
+R.c("server/chunks/bf122_aws-ssl-profiles_lib_72350269._.js")
+R.c("server/chunks/bf122_1a433a08._.js")
+R.c("server/chunks/[root-of-the-server]__faa38b3c._.js")
+R.c("server/chunks/sodalicious__next-internal_server_app_api_auth_logout_route_actions_73b81eee.js")
+R.m("[project]/sodalicious/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/sodalicious/app/api/auth/logout/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)")
+module.exports=R.m("[project]/sodalicious/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/sodalicious/app/api/auth/logout/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)").exports

@@ -17,6 +17,8 @@ export interface MenuItem {
   stock: number
   minThreshold: number
   image?: string
+  bottleneck_ingredient?: string
+  ingredients_list?: string
 }
 
 // ☕ HOT COFFEE
@@ -614,6 +616,8 @@ export function getBaseMenuItems() {
     stock: item.stock,
     minThreshold: item.minThreshold,
     image: item.image,
+    bottleneck_ingredient: item.bottleneck_ingredient,
+    ingredients_list: item.ingredients_list,
   }))
 }
 
@@ -622,7 +626,7 @@ export function deductStock(productId: string, quantity: number): boolean {
   const item = COMPLETE_MENU.find((i) => i.id === productId)
   if (!item) return false
   if (item.stock < quantity) return false
-  
+
   item.stock -= quantity
   return true
 }
@@ -634,7 +638,7 @@ export function getProductById(productId: string): MenuItem | undefined {
 export function updateProductStock(productId: string, newStock: number): boolean {
   const item = COMPLETE_MENU.find((i) => i.id === productId)
   if (!item) return false
-  
+
   item.stock = Math.max(0, newStock)
   return true
 }

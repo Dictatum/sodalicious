@@ -320,20 +320,22 @@ export function useMenuSync() {
   // Poll /api/products to reflect DB-backed stock changes across multiple clients
   const fetchStock = useCallback(async () => {
     try {
-      const res = await fetch("/api/products")
+      const res = await fetch(`/api/products?t=${Date.now()}`)
       if (!res.ok) return
       const data = await res.json()
-      // Merge DB stock into local menu items
-      // We match by Name since IDs might differ between mock and DB
-      const stockMap = new Map<string, number>(data.map((p: any) => [p.name, p.stock_quantity]))
+      const dataMap = new Map<string, any>(data.map((p: any) => [p.name, p]))
 
       setMenuItems((prev) =>
-        prev.map((mi) => ({
-          ...mi,
-          // If DB has stock, use it. Otherwise keep local.
-          // Note: If DB returns 0, use 0.
-          stock: stockMap.has(mi.name) ? (stockMap.get(mi.name) as number) : mi.stock
-        }))
+        prev.map((mi) => {
+          const dbItem = dataMap.get(mi.name)
+          return {
+            ...mi,
+            // If DB has stock, use it. Otherwise keep local.
+            stock: dbItem ? Number(dbItem.stock_quantity) : mi.stock,
+            bottleneck_ingredient: dbItem?.bottleneck_ingredient,
+            ingredients_list: dbItem?.ingredients_list
+          }
+        })
       )
     } catch (e) {
       console.warn("[useMenuSync] poll error", e)
